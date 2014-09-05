@@ -6,7 +6,9 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
 import org.apache.camel.impl.HeaderFilterStrategyComponent;
 import org.apache.camel.impl.UriEndpointComponent;
+import org.apache.camel.spi.RestConfiguration;
 import org.apache.camel.spi.RestConsumerFactory;
+import org.apache.camel.util.FileUtil;
 import org.apache.camel.util.URISupport;
 
 import java.net.URI;
@@ -28,10 +30,13 @@ public class RESTEasyComponent extends UriEndpointComponent implements RestConsu
     @Override
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
         RESTEasyEndpoint endpoint =  new RESTEasyEndpoint(remaining, this, configuration);
-        setProperties(configuration, parameters);
+//        if(parameters != null){
+//            setProperties(configuration, parameters);
+//        }
         // construct URI so we can use it to get the splitted information
         URI u = new URI(remaining);
         String protocol = u.getScheme();
+
 
         String uriPattern = u.getPath();
         if (parameters.size() > 0) {
@@ -50,11 +55,55 @@ public class RESTEasyComponent extends UriEndpointComponent implements RestConsu
         if (port > 0) {
             endpoint.setPort(port);
         }
-        return
+        return endpoint;
     }
 
     @Override
     public Consumer createConsumer(CamelContext camelContext, Processor processor, String verb, String basePath, String uriTemplate, String consumes, String produces, Map<String, Object> parameters) throws Exception {
-        return null;
+        String path = basePath;
+        if (uriTemplate != null) {
+            // make sure to avoid double slashes
+            if (uriTemplate.startsWith("/")) {
+                path = path + uriTemplate;
+            } else {
+                path = path + "/" + uriTemplate;
+            }
+        }
+        path = FileUtil.stripLeadingSeparator(path);
+
+        String scheme = "http";
+        String host = "";
+        int port = 0;
+        RestConfiguration config = getCamelContext().getRestConfiguration();
+        if (config.getComponent() == null || config.getComponent().equals("resteasy")) {
+            if (config.getScheme() != null) {
+                scheme = config.getScheme();
+            }
+            if (config.getHost() != null) {
+                host = config.getHost();
+            }
+            int num = config.getPort();
+            if (num > 0) {
+                port = num;
+            }
+        }
+
+//        String query = URISupport.createQueryString(map);
+
+        String url = "resteasy:%s://%s:%s/%s";
+
+
+        // get the endpoint
+        url = String.format(url, scheme, host, port, path);
+        RESTEasyEndpoint endpoint = camelContext.getEndpoint(url, RESTEasyEndpoint.class);
+        setProperties(endpoint, parameters);
+
+//        // configure consumer properties
+        Consumer consumer = endpoint.createConsumer(processor);
+//        if (config != null && config.getConsumerProperties() != null && !config.getConsumerProperties().isEmpty()) {
+//            setProperties(consumer, config.getConsumerProperties());
+//        }
+
+        return consumer;
     }
 }
