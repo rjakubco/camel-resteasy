@@ -21,7 +21,10 @@ public class RESTEasyEndpoint extends DefaultEndpoint implements HeaderFilterStr
 //    private static final String DEFAULT_HOST = "localhost";
     private static final int DEFAULT_SOCKET_TIMEOUT = 30000;
     private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
-//    private Method restletMethod = Method.GET;
+    private  String resteasyMethod = "GET";
+
+
+    //    private Method restletMethod = Method.GET;
 
     // Optional and for consumer only. This allows a single route to service multiple methods.
     // If it is non-null then restletMethod is ignored.
@@ -52,6 +55,13 @@ public class RESTEasyEndpoint extends DefaultEndpoint implements HeaderFilterStr
         this.configuration = configuration;
     }
 
+    public String getResteasyMethod() {
+        return resteasyMethod;
+    }
+
+    public void setResteasyMethod(String resteasyMethod) {
+        this.resteasyMethod = resteasyMethod;
+    }
     public static int getDefaultSocketTimeout() {
         return DEFAULT_SOCKET_TIMEOUT;
     }

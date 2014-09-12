@@ -30,13 +30,14 @@ public class RESTEasyComponent extends UriEndpointComponent implements RestConsu
     @Override
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
         RESTEasyEndpoint endpoint =  new RESTEasyEndpoint(remaining, this, configuration);
-//        if(parameters != null){
-//            setProperties(configuration, parameters);
-//        }
+        // Needed for taking component options from URI and using only clean uri for resource. Later adding query parameters
+        if(parameters != null){
+            setProperties(endpoint, parameters);
+        }
         // construct URI so we can use it to get the splitted information
+
         URI u = new URI(remaining);
         String protocol = u.getScheme();
-
 
         String uriPattern = u.getPath();
         if (parameters.size() > 0) {
