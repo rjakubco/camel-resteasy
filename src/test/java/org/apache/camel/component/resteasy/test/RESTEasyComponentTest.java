@@ -20,7 +20,7 @@ public class RESTEasyComponentTest extends CamelTestSupport {
             @Override
             public void configure() throws Exception {
                 from("direct:start")
-                    .to("resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users/1?socketTimeout=20");
+                    .to("resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users/1");
             }
         };
     }
@@ -33,7 +33,7 @@ public class RESTEasyComponentTest extends CamelTestSupport {
         Exchange exchange = template.request("direct:start", new Processor() {
             @Override
             public void process(Exchange exchange) throws Exception {
-                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "querytest=test1");
+//                exchange.getIn().setHeader(Exchange.HTTP_QUERY, "querytest=test1");
             }
         });
 //        System.out.println(exchange.getOut().getHeaders());
@@ -45,7 +45,7 @@ public class RESTEasyComponentTest extends CamelTestSupport {
 //        System.out.println(test.readEntity(String.class));
 //        System.out.println(test.getEntity());
 
-
+        String xx = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><user id=\"1\" uri=\"/user-management/users/1\"><firstName>demo</firstName><lastName>user</lastName></user>";
         System.out.println(exchange.getOut().getBody());
     }
 }
