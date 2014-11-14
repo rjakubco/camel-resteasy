@@ -4,18 +4,27 @@ import org.apache.camel.Component;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
+import org.apache.camel.component.http.HttpClientConfigurer;
+import org.apache.camel.component.http.HttpEndpoint;
 import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.camel.spi.HeaderFilterStrategyAware;
+import org.apache.camel.spi.UriParam;
+import org.apache.commons.httpclient.HttpConnectionManager;
+import org.apache.commons.httpclient.params.HttpClientParams;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
-public class RESTEasyEndpoint extends DefaultEndpoint implements HeaderFilterStrategyAware {
+public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrategyAware {
+    // TODO poupratovat a vymazat nepotrebne
 //    private static final int DEFAULT_PORT = 80;
 //    private static final String DEFAULT_PROTOCOL = "http";
 //    private static final String DEFAULT_HOST = "localhost";
@@ -23,12 +32,13 @@ public class RESTEasyEndpoint extends DefaultEndpoint implements HeaderFilterStr
     private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
     private  String resteasyMethod = "GET";
 
+    private HttpServletDispatcher dispatcher;
 
-    //    private Method restletMethod = Method.GET;
+    @UriParam
+    private String servletName;
 
-    // Optional and for consumer only. This allows a single route to service multiple methods.
-    // If it is non-null then restletMethod is ignored.
-//    private Method[] restletMethods;
+    @UriParam
+    private Boolean proxy = false;
 
     private String protocol;
     private String host;
@@ -37,22 +47,33 @@ public class RESTEasyEndpoint extends DefaultEndpoint implements HeaderFilterStr
     private int connectTimeout = DEFAULT_CONNECT_TIMEOUT;
     private String uriPattern;
     private RESTEasyConfiguration configuration;
-    private RESTEasyBinding restEasyBinding;
 
-    // Optional and for consumer only. This allows a single route to service multiple URI patterns.
-    // The URI pattern defined in the endpoint will still be honored.
-//    private List<String> restletUriPatterns;
-//
-//    private Map<String, String> restletRealm;
     private HeaderFilterStrategy headerFilterStrategy;
-//    private RestletBinding restletBinding;
+
     private boolean throwExceptionOnFailure = true;
     private boolean disableStreamCache;
 
 
-    public RESTEasyEndpoint(String endpointUri, Component component, RESTEasyConfiguration configuration){
-        super(endpointUri,component);
-        this.configuration = configuration;
+
+    public RESTEasyEndpoint(String endPointURI, RESTEasyComponent component, URI httpUri, HttpClientParams params, HttpConnectionManager httpConnectionManager,
+                            HttpClientConfigurer clientConfigurer) throws URISyntaxException {
+        super(endPointURI, component, httpUri, params, httpConnectionManager, clientConfigurer);
+    }
+
+    public Boolean getProxy() {
+        return proxy;
+    }
+
+    public void setProxy(Boolean proxy) {
+        this.proxy = proxy;
+    }
+
+    public String getServletName() {
+        return servletName;
+    }
+
+    public void setServletName(String servletName) {
+        this.servletName = servletName;
     }
 
     public String getResteasyMethod() {
@@ -126,13 +147,6 @@ public class RESTEasyEndpoint extends DefaultEndpoint implements HeaderFilterStr
         this.configuration = configuration;
     }
 
-    public RESTEasyBinding getRestEasyBinding() {
-        return restEasyBinding;
-    }
-
-    public void setRestEasyBinding(RESTEasyBinding restEasyBinding) {
-        this.restEasyBinding = restEasyBinding;
-    }
 
     public boolean isThrowExceptionOnFailure() {
         return throwExceptionOnFailure;
@@ -157,7 +171,9 @@ public class RESTEasyEndpoint extends DefaultEndpoint implements HeaderFilterStr
 
     @Override
     public Consumer createConsumer(Processor processor) throws Exception {
-        return new RESTEasyConsumer(this, processor);
+        RESTEasyConsumer answer = new RESTEasyConsumer(this, processor);
+        configureConsumer(answer);
+        return answer;
     }
 
     @Override

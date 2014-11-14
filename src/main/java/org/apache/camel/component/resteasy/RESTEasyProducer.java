@@ -60,7 +60,7 @@ public class RESTEasyProducer extends DefaultProducer {
         // set resteasy response as header so end user have access to it if needed
         exchange.getOut().setHeader("RESTEASY_RESPONSE", response);
 
-        //TODO: not working, it can be only applied to String from input stream?
+        //TODO not working, it can be only applied to String from input stream?
 //        exchange.getOut().setBody(response.readEntity(Object.class));
         exchange.getOut().setBody(response.readEntity(String.class));
 
@@ -87,7 +87,7 @@ public class RESTEasyProducer extends DefaultProducer {
 
 
         ResteasyWebTarget target = client.target(uri);
-        //TODO: treba dokonct a vyskusat.
+        //TODO treba dokonct a vyskusat.
         LOG.debug("Populate Resteasy request from exchange body: {} using media type {}", body, mediaType);
         if(method.equals("GET")){
             if(mediaType == null){
