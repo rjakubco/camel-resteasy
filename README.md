@@ -4,7 +4,7 @@ Resteasy camel component
 * Component is still in development so at the moment it is not included in master branch of Camel. 
 
 ### Producer:
-Producer is using RESTEasy implementation of JAX-RS 2.0 Client API for calling server. The producer will use all possibilities of RESTEasy client along with Resteasy Proxy Framework ([see more about this](http://docs.jboss.org/resteasy/docs/3.0-beta-3/userguide/html/RESTEasy_Client_Framework.html))
+Producer is using RESTEasy implementation of JAX-RS 2.0 Client API for calling server. The producer will use all possibilities of RESTEasy client along with Resteasy Proxy Framework ([see more](http://docs.jboss.org/resteasy/docs/3.0-beta-3/userguide/html/RESTEasy_Client_Framework.html))
 
 Uri options for producer (can change in the future):
 * throwExceptionOnFailure
