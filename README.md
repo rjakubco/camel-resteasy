@@ -4,7 +4,7 @@ Resteasy camel component
 * Component is still in development so at the moment it is not included in master branch of Camel. 
 
 ### Producer:
-Producer is using RESTEasy implementation of JAX-RS 2.0 Client API for calling server. The producer will use all possibilities of RESTEasy client along with Resteasy Proxy Framework ([see more about this](http://docs.jboss.org/resteasy/docs/3.0-beta-3/userguide/html/RESTEasy_Client_Framework.html))
+Producer is using RESTEasy implementation of JAX-RS 2.0 Client API for calling server. The producer will use all possibilities of RESTEasy client along with Resteasy Proxy Framework ([see more](http://docs.jboss.org/resteasy/docs/3.0-beta-3/userguide/html/RESTEasy_Client_Framework.html))
 
 Uri options for producer (can change in the future):
 * throwExceptionOnFailure
@@ -20,16 +20,19 @@ Most of the options are not yet implemented!
 #### Usage:
 It is pretty straight forward just addd camel-resteasy dependecy to your project and you can use it for client calls.
 #####Basic examples:
-`<route>`
-    `<from uri="direct:start"/>`
-    `<to uri="resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users/1"/>`
-`</route>`
-
+``` 
+<route>
+    <from uri="direct:start"/>
+    <to uri="resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users/1"/>
+</route>
+``` 
 Http method use for call can be send as Exchange.HTTP_METHOD header in message or specified by uri option "resteasyMethod"
-`<route>`
-    `<from uri="direct:start"/>`
-    `<to uri="resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users?resteasyMethod=POST"/>`
-`</route>`
+``` 
+<route>
+    <from uri="direct:start"/>
+    <to uri="resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users?resteasyMethod=POST"/>
+</route>
+``` 
 
 ### Consumer:
 Consumer is representing the server side of the RESTEasy and it is integrated with RESTEasy be extending HttpServletDispatcher class and implementing own servlet. The servlet will find all classes with RESTEasy annotations and handle all calls to them. Message sent to camel route will contain stream in its body representing returned response entity. The message will be also containing request and response as headers. Camel route specified for the consumer will be executed before the response is send back to the client.
@@ -46,6 +49,7 @@ Uri options for consumer (can change in the future):
 As always add depenecy of camel-resteasy in to your project.
 
 If you want to use consumer your need to use servlet and filter implemeneted in the component.  To this you need to add this configuration in to the web.xml:
+``` 
 <filter>
        <filter-name>Camel Response filter</filter-name>
        <filter-class>org.apache.camel.component.resteasy.servlet.RESTEasyResponseFilter</filter-class>
@@ -64,9 +68,11 @@ If you want to use consumer your need to use servlet and filter implemeneted in 
 	<servlet-name>resteasy-camel-servlet</servlet-name>
 	<url-pattern>Specified your url pattern</url-pattern>
 </servlet-mapping>
+``` 
 
 
 After that just create the component and use it as consumer in the camel route, exactly like in this simple example:
+``` 
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -94,8 +100,9 @@ After that just create the component and use it as consumer in the camel route, 
 
     <bean id="RestEasyComp" class="org.apache.camel.component.resteasy.RESTEasyComponent"/>
 </beans>
-
-And here is simple resteasy class, which is used in example above
+``` 
+And here is simple resteasy class, which is used in example above:
+``` 
 @Path("/customer")
 public class PrintService {
      @GET
@@ -111,3 +118,4 @@ public class PrintService {
         return Response.status(200).entity("/customer/test/print2").build();
     }
 }
+``` 
