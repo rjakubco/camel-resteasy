@@ -33,7 +33,7 @@ public class RESTEasyResponseFilter implements Filter {
             byte[] copy = responseCopier.getCopy();
 
             ((HttpServletResponse) response).setHeader("filter", "Filter Test");
-            System.out.println("!!!!!!!!!!! Response content filter logging:  " + new String(copy, response.getCharacterEncoding())); // Do your logging job here. This is just a basic example.
+//            System.out.println("!!!!!!!!!!! Response content filter logging:  " + new String(copy, response.getCharacterEncoding())); // Do your logging job here. This is just a basic example.
         }
     }
 

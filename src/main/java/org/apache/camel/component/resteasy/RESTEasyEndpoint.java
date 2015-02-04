@@ -24,12 +24,6 @@ import java.util.Map;
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrategyAware {
-    // TODO poupratovat a vymazat nepotrebne
-//    private static final int DEFAULT_PORT = 80;
-//    private static final String DEFAULT_PROTOCOL = "http";
-//    private static final String DEFAULT_HOST = "localhost";
-    private static final int DEFAULT_SOCKET_TIMEOUT = 30000;
-    private static final int DEFAULT_CONNECT_TIMEOUT = 30000;
     private  String resteasyMethod = "GET";
 
     private HttpServletDispatcher dispatcher;
@@ -38,26 +32,37 @@ public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
     private String servletName;
 
     @UriParam
+    private String proxyClientClass;
+
+    @UriParam
+    private String proxyMethod;
+
+    @UriParam
     private Boolean proxy = false;
+
+    @UriParam
+    private Boolean OauthSecure;
+
 
     private String protocol;
     private String host;
-    private int port ;
-    private int socketTimeout = DEFAULT_SOCKET_TIMEOUT;
-    private int connectTimeout = DEFAULT_CONNECT_TIMEOUT;
+    private int port;
     private String uriPattern;
     private RESTEasyConfiguration configuration;
 
     private HeaderFilterStrategy headerFilterStrategy;
 
+    @UriParam
     private boolean throwExceptionOnFailure = true;
     private boolean disableStreamCache;
 
 
+    public String getProxyMethod() {
+        return proxyMethod;
+    }
 
-    public RESTEasyEndpoint(String endPointURI, RESTEasyComponent component, URI httpUri, HttpClientParams params, HttpConnectionManager httpConnectionManager,
-                            HttpClientConfigurer clientConfigurer) throws URISyntaxException {
-        super(endPointURI, component, httpUri, params, httpConnectionManager, clientConfigurer);
+    public void setProxyMethod(String proxyMethod) {
+        this.proxyMethod = proxyMethod;
     }
 
     public Boolean getProxy() {
@@ -66,6 +71,20 @@ public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
 
     public void setProxy(Boolean proxy) {
         this.proxy = proxy;
+    }
+
+    public RESTEasyEndpoint(String endPointURI, RESTEasyComponent component, URI httpUri, HttpClientParams params, HttpConnectionManager httpConnectionManager,
+                            HttpClientConfigurer clientConfigurer) throws URISyntaxException {
+        super(endPointURI, component, httpUri, params, httpConnectionManager, clientConfigurer);
+
+    }
+
+    public String getProxyClientClass() {
+        return proxyClientClass;
+    }
+
+    public void setProxyClientClass(String proxyClientClass) {
+        this.proxyClientClass = proxyClientClass;
     }
 
     public String getServletName() {
@@ -82,13 +101,6 @@ public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
 
     public void setResteasyMethod(String resteasyMethod) {
         this.resteasyMethod = resteasyMethod;
-    }
-    public static int getDefaultSocketTimeout() {
-        return DEFAULT_SOCKET_TIMEOUT;
-    }
-
-    public static int getDefaultConnectTimeout() {
-        return DEFAULT_CONNECT_TIMEOUT;
     }
 
     public String getProtocol() {
@@ -115,23 +127,7 @@ public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
         this.port = port;
     }
 
-    public int getSocketTimeout() {
-        return socketTimeout;
-    }
-
-    public void setSocketTimeout(int socketTimeout) {
-        this.socketTimeout = socketTimeout;
-    }
-
-    public int getConnectTimeout() {
-        return connectTimeout;
-    }
-
-    public void setConnectTimeout(int connectTimeout) {
-        this.connectTimeout = connectTimeout;
-    }
-
-    public String getUriPattern() {
+     public String getUriPattern() {
         return uriPattern;
     }
 
@@ -162,6 +158,15 @@ public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
 
     public void setDisableStreamCache(boolean disableStreamCache) {
         this.disableStreamCache = disableStreamCache;
+    }
+
+
+    public Boolean getOauthSecure() {
+        return OauthSecure;
+    }
+
+    public void setOauthSecure(Boolean oauthSecure) {
+        OauthSecure = oauthSecure;
     }
 
     @Override

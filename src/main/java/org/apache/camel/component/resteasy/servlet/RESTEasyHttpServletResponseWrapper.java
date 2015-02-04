@@ -5,6 +5,7 @@ import org.apache.camel.component.resteasy.servlet.RESTEasyServletOutputStreamCo
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -64,6 +65,14 @@ public class RESTEasyHttpServletResponseWrapper extends HttpServletResponseWrapp
             return copier.getCopy();
         } else {
             return new byte[0];
+        }
+    }
+
+    public ByteArrayOutputStream getStream(){
+        if (copier != null) {
+            return copier.getStream();
+        } else {
+            return null;
         }
     }
 

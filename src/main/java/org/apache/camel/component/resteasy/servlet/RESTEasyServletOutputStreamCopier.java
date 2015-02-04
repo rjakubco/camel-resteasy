@@ -28,4 +28,8 @@ public class RESTEasyServletOutputStreamCopier extends ServletOutputStream {
         return copy.toByteArray();
     }
 
+    public ByteArrayOutputStream getStream(){
+        return copy;
+    }
+
 }

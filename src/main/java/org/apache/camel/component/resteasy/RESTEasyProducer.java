@@ -3,19 +3,45 @@ package org.apache.camel.component.resteasy;
 import org.apache.camel.CamelExchangeException;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Exchange;
+import org.apache.camel.component.resteasy.servlet.RESTEasyInvocationHandler;
 import org.apache.camel.impl.DefaultProducer;
 import org.apache.camel.util.MessageHelper;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.protocol.BasicHttpContext;
+import org.jboss.resteasy.client.ClientExecutor;
 import org.jboss.resteasy.client.ClientRequest;
 import org.jboss.resteasy.client.ClientRequestFactory;
+import org.jboss.resteasy.client.core.executors.ApacheHttpClient4Executor;
+import org.jboss.resteasy.client.jaxrs.ClientHttpEngine;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.jboss.resteasy.client.jaxrs.engines.ApacheHttpClient4Engine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.rmi.runtime.Log;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.*;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,13 +66,26 @@ public class RESTEasyProducer extends DefaultProducer {
     public void process(Exchange exchange) throws Exception {
         RESTEasyEndpoint endpoint = (RESTEasyEndpoint) getEndpoint();
 
-        LOG.trace("Uri pattern from endpoint: " + endpoint.getUriPattern());
+        LOG.info("Uri pattern from endpoint: " + endpoint.getUriPattern());
         String resourceUri = buildUri(endpoint, exchange);
-        LOG.trace("Final URI: " + resourceUri);
-        Response response = populateResteasyRequestFromExchangeAndExecute(resourceUri, exchange);
-        populateExchangeFromResteasyResponse(exchange, response);
+        LOG.info("Final URI: " + resourceUri);
 
-        response.close();
+
+        if(endpoint.getProxyClientClass() != null){
+            if(endpoint.getProxyClientClass().isEmpty()){
+                throw new IllegalArgumentException("Uri option proxyClientClass cannot be empty! Full class name must be specified.");
+            } else{
+                proxyMethod(resourceUri, exchange);
+            }
+        } else{
+            // Obycajny producer
+            Response response = populateResteasyRequestFromExchangeAndExecute(resourceUri, exchange);
+            populateExchangeFromResteasyResponse(exchange, response);
+
+            response.close();
+        }
+
+        proxyMethod(resourceUri, exchange);
     }
 
 
@@ -69,6 +108,66 @@ public class RESTEasyProducer extends DefaultProducer {
         MessageHelper.copyHeaders(exchange.getIn(), exchange.getOut(), false);
     }
 
+    public void proxyMethod(String uri, Exchange exchange){
+        RESTEasyEndpoint endpoint = (RESTEasyEndpoint) getEndpoint();
+
+        ResteasyWebTarget target = client.target(uri);
+        String proxyClassName = endpoint.getProxyClientClass();
+
+        String proxyMethodName = endpoint.getProxyMethod();
+        String proxyMethodNameHeader = exchange.getIn().getHeader(RESTEasyConstants.RESTEASY_PROXY_METHOD, String.class);
+        if(proxyMethodNameHeader != null && !proxyMethodName.equalsIgnoreCase(proxyMethodNameHeader) ){
+            proxyMethodName = proxyMethodNameHeader;
+        }
+
+
+        Class realClazz;
+        Object object = null;
+        try {
+            realClazz = Class.forName(proxyClassName);
+            Object simple = target.proxy(realClazz);
+
+
+            ArrayList headerParams = exchange.getIn().getHeader(RESTEasyConstants.RESTEASY_PROXY_METHOD_PARAMS, ArrayList.class);
+            if(headerParams != null){
+                Class[] paramsClasses = new Class[headerParams.size()];
+                for(int i = 0; i < headerParams.size(); i++){
+                    System.out.println(headerParams.get(i).getClass());
+                    paramsClasses[i] = headerParams.get(i).getClass();
+                }
+
+                Method m = simple.getClass().getMethod(proxyMethodName, paramsClasses);
+                object = m.invoke(simple, "test");
+            } else{
+                Method m = simple.getClass().getMethod(proxyMethodName, new Class[] {});
+                object = m.invoke(simple, new Object[] {});
+            }
+
+            if(object instanceof Response){
+                // TODO : Problem ak je na proxy metode navratovy typ Response. Potom to treba dako specialne osetrit a vratit
+                exchange.getOut().setBody(((Response)object).readEntity(String.class));
+                ((Response) object).close();
+            } else {
+                exchange.getOut().setBody(object);
+            }
+            // preserve headers from in by copying any non existing headers
+            // to avoid overriding existing headers with old values
+            MessageHelper.copyHeaders(exchange.getIn(), exchange.getOut(), false);
+        } catch (ClassNotFoundException e) {
+            exchange.getOut().setBody(ExceptionUtils.getStackTrace(e));
+            LOG.error("Camel RESTEasy proxy exception", e);
+        } catch (InvocationTargetException e) {
+            exchange.getOut().setBody(ExceptionUtils.getStackTrace(e));
+            LOG.error("Camel RESTEasy proxy exception", e);
+        } catch (NoSuchMethodException e) {
+            exchange.getOut().setBody(ExceptionUtils.getStackTrace(e));
+            LOG.error("Camel RESTEasy proxy exception", e);
+        } catch (IllegalAccessException e) {
+            exchange.getOut().setBody(ExceptionUtils.getStackTrace(e));
+            LOG.error("Camel RESTEasy proxy exception", e);
+        }
+    }
+
     public Response populateResteasyRequestFromExchangeAndExecute(String uri, Exchange exchange) {
         RESTEasyEndpoint endpoint = (RESTEasyEndpoint) getEndpoint();
         String method = endpoint.getResteasyMethod();
@@ -87,6 +186,8 @@ public class RESTEasyProducer extends DefaultProducer {
 
 
         ResteasyWebTarget target = client.target(uri);
+
+
         //TODO treba dokonct a vyskusat.
         LOG.debug("Populate Resteasy request from exchange body: {} using media type {}", body, mediaType);
         if(method.equals("GET")){
@@ -105,6 +206,12 @@ public class RESTEasyProducer extends DefaultProducer {
         if(method.equals("DELETE")){
             return  target.request(mediaType).delete();
         }
+
+
+
+
+
+
 
         // login and password are filtered by header filter strategy
 //        String login = exchange.getIn().getHeader(RestletConstants.RESTLET_LOGIN, String.class);
@@ -154,10 +261,16 @@ public class RESTEasyProducer extends DefaultProducer {
     }
 
     private static String buildUri(RESTEasyEndpoint endpoint, Exchange exchange) throws CamelExchangeException {
-        String uri = endpoint.getProtocol() + "://" + endpoint.getHost() + ":" + endpoint.getPort() + endpoint.getUriPattern();
+        String uri;
+        if(endpoint.getPort() == 0){
+            uri = endpoint.getProtocol() + "://" + endpoint.getHost()  + endpoint.getUriPattern();
+        } else{
+            uri = endpoint.getProtocol() + "://" + endpoint.getHost() + ":" + endpoint.getPort() + endpoint.getUriPattern();
+        }
+
 
         // substitute { } placeholders in uri and use mandatory headers
-//        LOG.trace("Substituting '(value)' placeholders in uri: {}", uri);
+        LOG.trace("Substituting '(value)' placeholders in uri: {}", uri);
         Matcher matcher = PATTERN.matcher(uri);
         while (matcher.find()) {
             String key = matcher.group(1);
@@ -178,11 +291,11 @@ public class RESTEasyProducer extends DefaultProducer {
 
         String query = exchange.getIn().getHeader(Exchange.HTTP_QUERY, String.class);
         if (query != null) {
-            LOG.trace("Adding query: {} to uri: {}", query, uri);
+            LOG.debug("Adding query: {} to uri: {}", query, uri);
             uri = addQueryToUri(uri, query);
         }
 
-        LOG.trace("Using uri: {}", uri);
+        LOG.debug("Using uri: {}", uri);
         return uri;
     }
 

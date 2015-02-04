@@ -29,7 +29,18 @@ public class RESTEasyComponent extends HttpComponent implements RestConsumerFact
 
     private HttpRegistry httpRegistry;
 
+    private String proxyConsumersClasses;
+
     private String servletName;
+
+
+    public String getProxyConsumersClasses() {
+        return proxyConsumersClasses;
+    }
+
+    public void setProxyConsumersClasses(String proxyConsumersClasses) {
+        this.proxyConsumersClasses = proxyConsumersClasses;
+    }
 
     public String getServletName() {
         return servletName;
