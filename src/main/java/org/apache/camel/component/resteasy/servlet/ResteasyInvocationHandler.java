@@ -5,9 +5,9 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * Created by roman on 08/11/14.
+ * @author : Roman Jakubco (rjakubco@redhat.com)
  */
-public class RESTEasyInvocationHandler implements InvocationHandler {
+public class ResteasyInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         return null;

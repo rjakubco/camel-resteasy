@@ -17,7 +17,7 @@
 package org.apache.camel.component.resteasy;
 
 import org.apache.camel.component.http.HttpConsumer;
-import org.apache.camel.component.resteasy.servlet.RESTEasyCamelServlet;
+import org.apache.camel.component.resteasy.servlet.ResteasyCamelServlet;
 
 import java.util.Set;
 
@@ -38,11 +38,11 @@ public interface HttpRegistry {
 
     void unregister(HttpConsumer consumer);
 
-    void register(RESTEasyCamelServlet provider);
+    void register(ResteasyCamelServlet provider);
 
-    void unregister(RESTEasyCamelServlet provider);
+    void unregister(ResteasyCamelServlet provider);
 
-    RESTEasyCamelServlet getCamelServlet(String servletName);
+    ResteasyCamelServlet getCamelServlet(String servletName);
 
     public Set<HttpConsumer> getConsumers();
 

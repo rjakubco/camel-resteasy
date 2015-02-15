@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Created by roman on 26/10/14.
+ * @author : Roman Jakubco (rjakubco@redhat.com)
  */
-public class RESTEasyServletOutputStreamCopier extends ServletOutputStream {
+public class ResteasyServletOutputStreamCopier extends ServletOutputStream {
 
     private OutputStream outputStream;
     private ByteArrayOutputStream copy;
 
-    public RESTEasyServletOutputStreamCopier(OutputStream outputStream) {
+    public ResteasyServletOutputStreamCopier(OutputStream outputStream) {
         this.outputStream = outputStream;
         this.copy = new ByteArrayOutputStream(1024);
     }

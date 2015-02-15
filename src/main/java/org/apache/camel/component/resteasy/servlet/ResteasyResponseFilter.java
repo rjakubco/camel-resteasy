@@ -7,10 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * Created by roman on 26/10/14.
+ * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 @WebFilter("/*")
-public class RESTEasyResponseFilter implements Filter {
+public class ResteasyResponseFilter implements Filter {
 
     @Override
     public void init(FilterConfig config) throws ServletException {
@@ -23,7 +23,7 @@ public class RESTEasyResponseFilter implements Filter {
             response.setCharacterEncoding("UTF-8"); // Or whatever default. UTF-8 is good for World Domination.
         }
 
-        RESTEasyHttpServletResponseWrapper responseCopier = new RESTEasyHttpServletResponseWrapper((HttpServletResponse) response);
+        ResteasyHttpServletResponseWrapper responseCopier = new ResteasyHttpServletResponseWrapper((HttpServletResponse) response);
 
         try {
             chain.doFilter(request, responseCopier);

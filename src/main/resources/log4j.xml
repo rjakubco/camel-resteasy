@@ -18,7 +18,7 @@
     <logger name="org.apache.camel.impl" >
         <level value="OFF"/>
     </logger>
-    <logger name="org.apache.camel.component.resteasy.RESTEasyProducer" >
+    <logger name="org.apache.camel.component.resteasy.ResteasyProducer" >
         <level value="TRACE"/>
     </logger>
 

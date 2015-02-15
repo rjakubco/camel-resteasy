@@ -41,7 +41,7 @@ public class RESTEasyComponentTest extends CamelTestSupport {
 //        Response test =  exchange.getOut().getHeader("RESTEASY_RESPONSE", Response.class);
 ////        System.out.println(test);
 ////        System.out.println(test.getHeaders());
-//        // TODO: cannot get enertity from resteast_response because it is already closed. Not sure if ok or not.
+//
 //        // because the entityt should be in body which can be retrieved
 ////        System.out.println(test.readEntity(String.class));
 ////        System.out.println(test.getEntity());

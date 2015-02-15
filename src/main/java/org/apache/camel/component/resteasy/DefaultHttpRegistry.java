@@ -18,24 +18,27 @@ package org.apache.camel.component.resteasy;
 
 import org.apache.camel.component.http.CamelServlet;
 import org.apache.camel.component.http.HttpConsumer;
-import org.apache.camel.component.resteasy.servlet.RESTEasyCamelServlet;
+import org.apache.camel.component.resteasy.servlet.ResteasyCamelServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import java.util.*;
 
+/**
+ * @author : Roman Jakubco (rjakubco@redhat.com)
+ */
 public class DefaultHttpRegistry implements HttpRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultHttpRegistry.class);
 
     private static Map<String, HttpRegistry> registries = new HashMap<String, HttpRegistry>();
     
     private final Set<HttpConsumer> consumers;
-    private final Set<RESTEasyCamelServlet> providers;
+    private final Set<ResteasyCamelServlet> providers;
 
     public DefaultHttpRegistry() {
         consumers = new HashSet<HttpConsumer>();
-        providers = new HashSet<RESTEasyCamelServlet>();
+        providers = new HashSet<ResteasyCamelServlet>();
     }
     
     /**
@@ -63,7 +66,7 @@ public class DefaultHttpRegistry implements HttpRegistry {
             LOG.debug("Registering consumer for path {} providers present: {}", consumer.getPath(), providers.size());
         }
         consumers.add(consumer);
-        for (RESTEasyCamelServlet provider : providers) {
+        for (ResteasyCamelServlet provider : providers) {
             provider.connect(consumer);
         }
     }
@@ -74,24 +77,24 @@ public class DefaultHttpRegistry implements HttpRegistry {
             LOG.debug("Unregistering consumer for path {}", consumer.getPath());
         }
         consumers.remove(consumer);
-        for (RESTEasyCamelServlet provider : providers) {
+        for (ResteasyCamelServlet provider : providers) {
             provider.disconnect(consumer);
         }
     }
     
     @SuppressWarnings("rawtypes")
-    public void register(RESTEasyCamelServlet provider, Map properties) {
-        RESTEasyCamelServlet camelServlet = provider;
+    public void register(ResteasyCamelServlet provider, Map properties) {
+        ResteasyCamelServlet camelServlet = provider;
         camelServlet.setServletName((String) properties.get("servlet-name"));
         register(camelServlet);
     }
 
-    public void unregister(RESTEasyCamelServlet provider, Map<String, Object> properties) {
+    public void unregister(ResteasyCamelServlet provider, Map<String, Object> properties) {
         unregister(provider);
     }
     
     @Override
-    public void register(RESTEasyCamelServlet provider) {
+    public void register(ResteasyCamelServlet provider) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Registering CamelServlet with name {} consumers present: {}", provider.getServletName(), consumers.size());
         }
@@ -102,7 +105,7 @@ public class DefaultHttpRegistry implements HttpRegistry {
     }
 
     @Override
-    public void unregister(RESTEasyCamelServlet provider) {
+    public void unregister(ResteasyCamelServlet provider) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Unregistering CamelServlet with name {}", provider.getServletName());
         }
@@ -110,8 +113,8 @@ public class DefaultHttpRegistry implements HttpRegistry {
     }
 
     @Override
-    public RESTEasyCamelServlet getCamelServlet(String servletName) {
-        for (RESTEasyCamelServlet provider : providers) {
+    public ResteasyCamelServlet getCamelServlet(String servletName) {
+        for (ResteasyCamelServlet provider : providers) {
             if (provider.getServletName().equals(servletName)) {
                 return provider;
             }
@@ -123,7 +126,7 @@ public class DefaultHttpRegistry implements HttpRegistry {
         providers.clear();
         for (Servlet servlet : servlets) {
             if (servlet instanceof CamelServlet) {
-                providers.add((RESTEasyCamelServlet) servlet);
+                providers.add((ResteasyCamelServlet) servlet);
             }
         }
     }

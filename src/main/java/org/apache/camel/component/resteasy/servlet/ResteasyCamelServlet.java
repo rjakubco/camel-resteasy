@@ -11,30 +11,26 @@ import org.apache.camel.component.resteasy.*;
 import org.apache.camel.impl.DefaultExchange;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
-import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.rmi.runtime.Log;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.Path;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * Created by roman on 18/10/14.
+ * @author : Roman Jakubco (rjakubco@redhat.com)
  */
-public class RESTEasyCamelServlet extends HttpServletDispatcher {
+public class ResteasyCamelServlet extends HttpServletDispatcher {
     private HttpRegistry httpRegistry;
 
     private String servletName;
@@ -42,7 +38,7 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
     private ServletResolveConsumerStrategy servletResolveConsumerStrategy = new HttpServletResolveConsumerStrategy();
     private final ConcurrentMap<String, HttpConsumer> consumers = new ConcurrentHashMap<String, HttpConsumer>();
 
-    private static final Logger LOG = LoggerFactory.getLogger(RESTEasyCamelServlet.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ResteasyCamelServlet.class);
 
 
 
@@ -53,7 +49,7 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
         String name = servletConfig.getServletName();
         if (httpRegistry == null) {
             httpRegistry = DefaultHttpRegistry.getHttpRegistry(name);
-            RESTEasyCamelServlet existing = httpRegistry.getCamelServlet(name);
+            ResteasyCamelServlet existing = httpRegistry.getCamelServlet(name);
             if (existing != null) {
                 String msg = "Duplicate ServletName detected: " + name + ". Existing: " + existing + " This: " + this.toString()
                         + ". Its advised to use unique ServletName per Camel application.";
@@ -66,7 +62,7 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
 
         for (Map.Entry<String, HttpConsumer> entry : consumers.entrySet())
         {
-            String proxyClasses = ((RESTEasyComponent)getServletEndpoint(entry.getValue()).getComponent()).getProxyConsumersClasses();
+            String proxyClasses = ((ResteasyComponent)getServletEndpoint(entry.getValue()).getComponent()).getProxyConsumersClasses();
             if(proxyClasses != null){
                 String[] classes = proxyClasses.split(",");
                 LOG.debug("Proxy classes defined in the component {}" , Arrays.asList(classes));
@@ -75,7 +71,7 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
                     try {
                         Class realClazz = Class.forName(clazz);
                         // Create dynamic proxy class implementing interface
-                        InvocationHandler handler = new RESTEasyInvocationHandler();
+                        InvocationHandler handler = new ResteasyInvocationHandler();
                         Object  proxy = Proxy.newProxyInstance(realClazz.getClassLoader(), new Class[]{realClazz}, handler);
 
                         // register new created proxy to the resteasy registry
@@ -89,32 +85,37 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
         }
     }
 
-    private RESTEasyEndpoint getServletEndpoint(HttpConsumer consumer) {
-        if (!(consumer.getEndpoint() instanceof RESTEasyEndpoint)) {
+    private ResteasyEndpoint getServletEndpoint(HttpConsumer consumer) {
+        if (!(consumer.getEndpoint() instanceof ResteasyEndpoint)) {
             throw new RuntimeException("Invalid consumer type. Must be RESTEasyEndpoint but is "
                     + consumer.getClass().getName());
         }
-        return (RESTEasyEndpoint)consumer.getEndpoint();
+        return (ResteasyEndpoint)consumer.getEndpoint();
     }
 
     @Override
     protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-
         // From camel servlet
-        LOG.trace("Service: {}", httpServletRequest);
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Service: {}", httpServletRequest);
+        }
 
         // Is there a consumer registered for the request.
         HttpConsumer consumer = resolve(httpServletRequest);
 
         if (consumer == null) {
-            LOG.info("No consumer to service request {}", httpServletRequest);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("No consumer to service request {}", httpServletRequest);
+            }
             // No consumer found in routes let resteasy dispatcher process the request -> returning unchanged rest answer
             super.service(httpServletRequest, httpServletResponse);
             return;
         }
         // are we suspended?
         if (consumer.isSuspended()) {
-            LOG.info("Consumer suspended, cannot service request {}", httpServletRequest);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Consumer suspended, cannot service request {}", httpServletRequest);
+            }
             httpServletResponse.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
             super.service(httpServletRequest, httpServletResponse);
             return;
@@ -161,21 +162,20 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
                 return;
             }
         }
-
-        LOG.info("Copier service: " + new String(((RESTEasyHttpServletResponseWrapper) httpServletResponse).getCopy(), httpServletResponse.getCharacterEncoding()));
-
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Copier service: " + new String(((ResteasyHttpServletResponseWrapper) httpServletResponse).getCopy(), httpServletResponse.getCharacterEncoding()));
+        }
 
         HttpHelper.setCharsetFromContentType(httpServletRequest.getContentType(), exchange);
         HttpMessage m = new HttpMessage(exchange, httpServletRequest, httpServletResponse);
 
-        // TODO na toto sa este viaze dole reset bufferu. Treba asi preskumat
-        String response = new String(((RESTEasyHttpServletResponseWrapper) httpServletResponse).getCopy(), httpServletResponse.getCharacterEncoding());
+        String response = new String(((ResteasyHttpServletResponseWrapper) httpServletResponse).getCopy(), httpServletResponse.getCharacterEncoding());
 
-        m.setBody(((RESTEasyHttpServletResponseWrapper) httpServletResponse).getStream());
+        m.setBody(((ResteasyHttpServletResponseWrapper) httpServletResponse).getStream());
         exchange.setIn(m);
 
         String contextPath = consumer.getEndpoint().getPath();
-        exchange.getIn().setHeader(RESTEasyConstants.RESTEASY_CONTEXT_PATH, contextPath);
+        exchange.getIn().setHeader(ResteasyConstants.RESTEASY_CONTEXT_PATH, contextPath);
 
         String httpPath = (String)exchange.getIn().getHeader(Exchange.HTTP_PATH);
         // here we just remove the CamelServletContextPath part from the HTTP_PATH
@@ -207,7 +207,7 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
                 httpServletResponse.resetBuffer();
             }
 
-            // TODO reset headers too? Or they will be overwritten?
+
             consumer.getBinding().writeResponse(exchange, httpServletResponse);
 
         } catch (IOException e) {
@@ -223,15 +223,11 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
 
     public void connect(HttpConsumer consumer) {
 
-        RESTEasyEndpoint endpoint = getServletEndpoint(consumer);
-        // TODO nie som isty co to robi tento if. Ale malo to nieco s OSGI spolocne a kvoli tomu neregsitrovalo consumera
-        //TODO alebo ked bude viac servletov s inym menom moze by problem. Doriesit v buducnosti ked to bude akutne
-//        if (endpoint.getServletName() != null && endpoint.getServletName().equals(getServletName())) {
-//            System.out.println("vlozeny consumer");
+        ResteasyEndpoint endpoint = getServletEndpoint(consumer);
         consumers.put(consumer.getPath(), consumer);
-//        }
+
     }
-    //
+
     public void destroy() {
         DefaultHttpRegistry.removeHttpRegistry(getServletName());
         if (httpRegistry != null) {
@@ -253,20 +249,11 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
     public void setServletName(String servletName) {
         this.servletName = servletName;
     }
-//
-//    public ServletResolveConsumerStrategy getServletResolveConsumerStrategy() {
-//        return servletResolveConsumerStrategy;
-//    }
-//
-//    public void setServletResolveConsumerStrategy(ServletResolveConsumerStrategy servletResolveConsumerStrategy) {
-//        this.servletResolveConsumerStrategy = servletResolveConsumerStrategy;
-//    }
+
 
     public Map<String, HttpConsumer> getConsumers() {
         return Collections.unmodifiableMap(consumers);
     }
-
-    // TODO zatial toto odhaluje consumera. Nie som si isty uplne aku to bude mat rolu. Ale je mozne ze to bude treba vylepsit
 
     protected HttpConsumer resolve(HttpServletRequest request) {
         String path = request.getPathInfo();
@@ -285,8 +272,5 @@ public class RESTEasyCamelServlet extends HttpServletDispatcher {
         }
         return answer;
     }
-
-
-
 }
 

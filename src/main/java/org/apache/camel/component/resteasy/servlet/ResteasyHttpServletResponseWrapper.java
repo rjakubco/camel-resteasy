@@ -1,7 +1,5 @@
 package org.apache.camel.component.resteasy.servlet;
 
-import org.apache.camel.component.resteasy.servlet.RESTEasyServletOutputStreamCopier;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -11,15 +9,15 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 /**
- * Created by roman on 26/10/14.
+ * @author : Roman Jakubco (rjakubco@redhat.com)
  */
-public class RESTEasyHttpServletResponseWrapper extends HttpServletResponseWrapper {
+public class ResteasyHttpServletResponseWrapper extends HttpServletResponseWrapper {
 
     private ServletOutputStream outputStream;
     private PrintWriter writer;
-    private RESTEasyServletOutputStreamCopier copier;
+    private ResteasyServletOutputStreamCopier copier;
 
-    public RESTEasyHttpServletResponseWrapper(HttpServletResponse response) throws IOException {
+    public ResteasyHttpServletResponseWrapper(HttpServletResponse response) throws IOException {
         super(response);
     }
 
@@ -31,7 +29,7 @@ public class RESTEasyHttpServletResponseWrapper extends HttpServletResponseWrapp
 
         if (outputStream == null) {
             outputStream = getResponse().getOutputStream();
-            copier = new RESTEasyServletOutputStreamCopier(outputStream);
+            copier = new ResteasyServletOutputStreamCopier(outputStream);
         }
 
         return copier;
@@ -44,7 +42,7 @@ public class RESTEasyHttpServletResponseWrapper extends HttpServletResponseWrapp
         }
 
         if (writer == null) {
-            copier = new RESTEasyServletOutputStreamCopier(getResponse().getOutputStream());
+            copier = new ResteasyServletOutputStreamCopier(getResponse().getOutputStream());
             writer = new PrintWriter(new OutputStreamWriter(copier, getResponse().getCharacterEncoding()), true);
         }
 

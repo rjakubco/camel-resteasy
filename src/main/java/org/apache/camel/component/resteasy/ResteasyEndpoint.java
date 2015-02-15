@@ -1,32 +1,28 @@
 package org.apache.camel.component.resteasy;
 
-import org.apache.camel.Component;
 import org.apache.camel.Consumer;
 import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.component.http.HttpEndpoint;
-import org.apache.camel.impl.DefaultEndpoint;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.camel.spi.HeaderFilterStrategyAware;
 import org.apache.camel.spi.UriParam;
 import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpClientParams;
-import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
-public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrategyAware {
+public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrategyAware {
+    @UriParam
     private  String resteasyMethod = "GET";
 
-    private HttpServletDispatcher dispatcher;
+    private ResteasyHttpBinding restEasyHttpBinding;
 
     @UriParam
     private String servletName;
@@ -43,12 +39,17 @@ public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
     @UriParam
     private Boolean OauthSecure;
 
+    @UriParam
+    private String username;
+
+    @UriParam
+    private String password;
+
 
     private String protocol;
     private String host;
     private int port;
     private String uriPattern;
-    private RESTEasyConfiguration configuration;
 
     private HeaderFilterStrategy headerFilterStrategy;
 
@@ -73,7 +74,7 @@ public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
         this.proxy = proxy;
     }
 
-    public RESTEasyEndpoint(String endPointURI, RESTEasyComponent component, URI httpUri, HttpClientParams params, HttpConnectionManager httpConnectionManager,
+    public ResteasyEndpoint(String endPointURI, ResteasyComponent component, URI httpUri, HttpClientParams params, HttpConnectionManager httpConnectionManager,
                             HttpClientConfigurer clientConfigurer) throws URISyntaxException {
         super(endPointURI, component, httpUri, params, httpConnectionManager, clientConfigurer);
 
@@ -135,13 +136,6 @@ public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
         this.uriPattern = uriPattern;
     }
 
-    public RESTEasyConfiguration getConfiguration() {
-        return configuration;
-    }
-
-    public void setConfiguration(RESTEasyConfiguration configuration) {
-        this.configuration = configuration;
-    }
 
 
     public boolean isThrowExceptionOnFailure() {
@@ -169,14 +163,38 @@ public class RESTEasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
         OauthSecure = oauthSecure;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public ResteasyHttpBinding getRestEasyHttpBinding() {
+        return restEasyHttpBinding;
+    }
+
+    public void setRestEasyHttpBinding(ResteasyHttpBinding restEasyHttpBinding) {
+        this.restEasyHttpBinding = restEasyHttpBinding;
+    }
+
     @Override
     public Producer createProducer() throws Exception {
-        return new RESTEasyProducer(this);
+        return new ResteasyProducer(this);
     }
 
     @Override
     public Consumer createConsumer(Processor processor) throws Exception {
-        RESTEasyConsumer answer = new RESTEasyConsumer(this, processor);
+        ResteasyConsumer answer = new ResteasyConsumer(this, processor);
         configureConsumer(answer);
         return answer;
     }
