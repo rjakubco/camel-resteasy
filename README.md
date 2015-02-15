@@ -8,14 +8,12 @@ Producer is using RESTEasy implementation of JAX-RS 2.0 Client API for calling s
 
 Uri options for producer (can change in the future):
 * throwExceptionOnFailure
-* login
-* password
+* username -> username for basic authentication
+* password -> password for basic authentication
 * resteasyMethod (String)-> GET/POST/DELETE/PUT 
-* proxyClasses (boolean) -> if proxy framework should be use for the client.
-* OauthSecure (boolean)  -> false by default -> component check if http or https protocol is used. If https is detected then login and password should be provided as headers or as uri options.
-		         -> if set true then OAuth authorization is used and required headers must be specified.
+* proxyClientClass (String) -> full name of the interface, which should be used for proxy client
+* proxyMethod (String) -> name of the method, which should be invoked on specified proxyClientClass
 
-Most of the options are not yet implemented!
 
 #### Usage:
 It is pretty straight forward just addd camel-resteasy dependecy to your project and you can use it for client calls.
@@ -32,17 +30,28 @@ Http method use for call can be send as Exchange.HTTP_METHOD header in message o
     <from uri="direct:start"/>
     <to uri="resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users?resteasyMethod=POST"/>
 </route>
-``` 
 
+<route>
+     <from uri="resteasy:///test/match/print?servletName=resteasy-camel-servlet"/>
+     <to uri="resteasy:http://localhost:8080?proxyClientClass=com.proxy.rest.TestProxyClass&amp;proxyMethod=testingProxyMethod"/>
+ </route>
+``` 
 ### Consumer:
 Consumer is representing the server side of the RESTEasy and it is integrated with RESTEasy be extending HttpServletDispatcher class and implementing own servlet. The servlet will find all classes with RESTEasy annotations and handle all calls to them. Message sent to camel route will contain stream in its body representing returned response entity. The message will be also containing request and response as headers. Camel route specified for the consumer will be executed before the response is send back to the client.
 
-RESTEasy is only registering annotations in classes or on interfaces if they have implementing class. If you want just specified paths and methods by annotation in interface and handle creating response in camel and you can use this component with proxy option, which will find all interfaces with resteasy annotations and creates dynamic proxy classes implementing these interfaces and register them with the servlet. This is done on initialization of the servlet. Finding these interfaces in classloader on bigger project can be really slow, so bear that in mind. 
+RESTEasy is only registering annotations in classes or on interfaces if they have implementing class. If you want just specified paths and methods by annotation in interface and handle creating response in camel, you can use this component with proxy option. You just need to specify proxy interfaces in component bean in property "proxyConsumersClasses", separated by comma. Then set URI option "proxy" on consumer to true The component will create dynamic proxy classes implementing these interfaces and register them with the servlet. This is done on initialization of the servlet.
 
+There is also posibility to just create consumers in camel route without interface or classes. For this purporse just set URI option proxy to true and you can create responses in camel. 
+``` 
+<bean id="resteasy" class="org.apache.camel.component.resteasy.ResteasyComponent">
+        <property name="proxyConsumersClasses" value="com.camel.rest.ServiceInterface,com.camel.rest.AnotherServiceInterface"/>
+</bean>
+``` 
 
 Uri options for consumer (can change in the future):
 * matchOnUriPrefix        -> Whether or not the CamelServlet should try to find a target consumer by matching the URI prefix, if no exact match is found. 
 * servlet-name (required) -> Specifies the servlet name that the servlet endpoint will bind to. This name should match the name you define in web.xml file. 
+* proxy (boolean) -> if set to true, then camel with register this consumer as proxy. 
 
 
 #### Usage:
@@ -52,7 +61,7 @@ If you want to use consumer your need to use servlet and filter implemeneted in 
 ``` 
 <filter>
        <filter-name>Camel Response filter</filter-name>
-       <filter-class>org.apache.camel.component.resteasy.servlet.RESTEasyResponseFilter</filter-class>
+       <filter-class>org.apache.camel.component.resteasy.servlet.ResteasyResponseFilter</filter-class>
 </filter>
 <filter-mapping>
        <filter-name>Camel Response filter</filter-name>
@@ -61,7 +70,7 @@ If you want to use consumer your need to use servlet and filter implemeneted in 
 
 <servlet>
 	<servlet-name>resteasy-camel-servlet</servlet-name>
-	<servlet-class>org.apache.camel.component.resteasy.servlet.RESTEasyCamelServlet</servlet-class>
+	<servlet-class>org.apache.camel.component.resteasy.servlet.ResteasyCamelServlet</servlet-class>
 </servlet>
 
 <servlet-mapping>
@@ -92,7 +101,20 @@ After that just create the component and use it as consumer in the camel route, 
                 <setBody>
                     <constant>match</constant>
                 </setBody>
-           </route>                    
+           </route>   
+           
+           <route>
+                <from uri="resteasy:///only/camel/address?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+                <setBody>
+                    <constant>Creation of consumer without class or interface was sucessful</constant>
+                </setBody>
+            </route>
+            <route>
+                <from uri="resteasy:///address/specified/in/interface?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+                <setBody>
+                    <constant>Creation of resteasy adress from interface com.camel.rest.ServiceInterface by dynamic proxy</constant>
+                </setBody>
+            </route>
 
       </camelContext>
 
@@ -117,5 +139,26 @@ public class PrintService {
     public Response printMessage3(){
         return Response.status(200).entity("/customer/test/print2").build();
     }
+}
+``` 
+Simple example of the interface used for proxy consumer example in the code above.
+``` 
+package com.camel.rest;
+
+@Path("/address")
+public interface ServiceInterface {
+
+    @GET
+    @Path("/specified/in/interface")
+    public Response printMessage();
+
+
+
+    @POST
+    @Path("/post")
+    @Consumes("application/json")
+    public Response createProductInJSON(Product product);
+}
+
 }
 ``` 
