@@ -1,0 +1,61 @@
+<web-app id="WebApp_ID" version="2.4"
+         xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+	http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <display-name>Restful Web Application</display-name>
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+    <listener>
+        <listener-class>
+            org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
+    </listener>
+
+      <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+    <filter>
+        <filter-name>Camel Response filter</filter-name>
+        <filter-class>org.apache.camel.component.resteasy.servlet.ResteasyResponseFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Camel Response filter</filter-name>
+        <servlet-name>resteasy-camel-servlet</servlet-name>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>resteasy-camel-servlet</servlet-name>
+        <servlet-class>
+            org.apache.camel.component.resteasy.servlet.ResteasyCamelServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>resteasy-camel-servlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+
+    <!--<security-constraint>-->
+    <!--<web-resource-collection>-->
+    <!--<web-resource-name>HtmlAuth</web-resource-name>-->
+    <!--<description>application security constraints</description>-->
+    <!--<url-pattern>/*</url-pattern>-->
+    <!--<http-method>GET</http-method>-->
+    <!--<http-method>POST</http-method>-->
+    <!--</web-resource-collection>-->
+    <!--<auth-constraint>-->
+    <!--<role-name>Manager</role-name>-->
+    <!--</auth-constraint>-->
+    <!--</security-constraint>-->
+    <!--<login-config>-->
+    <!--<auth-method>BASIC</auth-method>-->
+    <!--<realm-name>UserRoles simple realm</realm-name>-->
+    <!--</login-config>-->
+    <!--<security-role>-->
+    <!--<role-name>Manager</role-name>-->
+    <!--</security-role>-->
+
+</web-app>

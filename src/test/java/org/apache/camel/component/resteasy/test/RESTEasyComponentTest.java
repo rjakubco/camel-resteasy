@@ -5,28 +5,81 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 
-import org.apache.camel.test.junit4.CamelTestSupport;
+import org.apache.camel.component.resteasy.test.beans.PrintService;
+import org.apache.camel.component.resteasy.test.beans.TestBean;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.ArchiveAsset;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
+import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.MavenImporter;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
+import java.io.File;
 
 /**
  * Created by reon on 29/08/14.
  */
-public class RESTEasyComponentTest extends CamelTestSupport {
-    @Override
-    protected RouteBuilder createRouteBuilder() throws Exception {
-        return new RouteBuilder() {
-            @Override
-            public void configure() throws Exception {
-                from("direct:start")
-                    .to("resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users/1");
-            }
-        };
+
+@RunWith(Arquillian.class)
+public class RESTEasyComponentTest {
+    WebArchive test;
+//
+    @Deployment
+    public static WebArchive createDeployment() {
+//        MavenResolverSystem resolver = Maven.resolver().loadPomFromFile("pom.xml");
+        return ShrinkWrap.create(WebArchive.class, "test.war")
+//                .setWebXML(new File(WEBAPP_SRC, "WEB-INF/web.xml"))
+                .addAsResource(new File("src/test/resources/applicationContext.xml"))
+                .setWebXML(new File("src/test/resources/web.xml"))
+                .addClasses(PrintService.class, TestBean.class)
+                .addPackage("org.apache.camel.component.resteasy")
+                .addPackage("org.apache.camel.component.resteasy.servlet")
+                .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()
+                        .withTransitivity().asFile())
+                .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
+
+
+
+//        return ShrinkWrap.create(MavenImporter.class)
+//                .loadPomFromFile("src/test/resources/pom.xml").importBuildOutput().as(WebArchive.class).addAsResource(new File("src/test/resources/applicationContext.xml"))
+//                .setWebXML(new File("src/test/resources/web.xml"))
+//                .addClasses(PrintService.class, TestBean.class).addPackage("org.apache.camel.component.resteasy")
+//                .addPackage("org.apache.camel.component.resteasy.servlet").addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
+
     }
 
+    @Test
+    public void testName() throws Exception {
 
+        test = ShrinkWrap.create(WebArchive.class, "test.war")
+//                .setWebXML(new File(WEBAPP_SRC, "WEB-INF/web.xml"))
+                .addAsResource(new File("src/test/resources/applicationContext.xml"))
+                .setWebXML(new File("src/test/resources/web.xml"))
+                .addClasses(PrintService.class, TestBean.class)
+                .addPackage("org.apache.camel.component.resteasy")
+                .addPackage("org.apache.camel.component.resteasy.servlet")
+                .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()
+                        .withTransitivity().asFile())
+                .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
+        System.out.println(test.toString(true));
+        System.out.println("----------------------------------------------------------------------------------------");
+
+        test = ShrinkWrap.create(MavenImporter.class)
+                .loadPomFromFile("src/test/resources/pom.xml").importBuildOutput().as(WebArchive.class).addAsResource(new File("src/test/resources/applicationContext.xml"))
+                .setWebXML(new File("src/test/resources/web.xml"))
+                .addClasses(PrintService.class, TestBean.class).addPackage("org.apache.camel.component.resteasy")
+                .addPackage("org.apache.camel.component.resteasy.servlet").addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
+        System.out.println(test.toString(true));
+
+    }
 
 
 //    @Test
