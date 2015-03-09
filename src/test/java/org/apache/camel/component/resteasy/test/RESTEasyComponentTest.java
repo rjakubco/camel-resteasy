@@ -36,31 +36,19 @@ import java.net.URL;
 
 @RunWith(Arquillian.class)
 public class RESTEasyComponentTest {
-    WebArchive test;
 
     @Deployment
     public static WebArchive createDeployment() {
 
-        return ShrinkWrap.create(WebArchive.class, "superBalik.war")
+        return ShrinkWrap.create(WebArchive.class, "test.war")
                 .addAsResource(new File("src/test/resources/applicationContext.xml"))
                 .addAsWebInfResource(new File("src/test/resources/web.xml"))
-//                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
-//                .addAsWebInfResource(new File("src/test/resources/jboss-web.xml"))
                 .addClasses(PrintService.class, TestBean.class)
                 .addPackage("org.apache.camel.component.resteasy")
                 .addPackage("org.apache.camel.component.resteasy.servlet")
                 .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()
                         .withTransitivity().asFile())
                 .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
-
-
-
-//        return ShrinkWrap.create(MavenImporter.class)
-//                .loadPomFromFile("src/test/resources/pom.xml").importBuildOutput().as(WebArchive.class).addAsResource(new File("src/test/resources/applicationContext.xml"))
-//                .setWebXML(new File("src/test/resources/web.xml"))
-//                .addClasses(PrintService.class, TestBean.class).addPackage("org.apache.camel.component.resteasy")
-//                .addPackage("org.apache.camel.component.resteasy.servlet").addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
-
     }
 
 
