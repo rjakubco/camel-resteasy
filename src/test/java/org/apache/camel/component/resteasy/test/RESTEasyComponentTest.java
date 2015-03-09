@@ -1,6 +1,7 @@
 package org.apache.camel.component.resteasy.test;
 
 
+import com.google.inject.Inject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -10,10 +11,14 @@ import org.apache.camel.component.resteasy.test.beans.TestBean;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.ArchiveAsset;
+import org.jboss.shrinkwrap.api.asset.EmptyAsset;
+import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.jboss.shrinkwrap.impl.base.exporter.zip.ZipExporterImpl;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
 import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.MavenImporter;
@@ -23,6 +28,7 @@ import org.junit.runner.RunWith;
 
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.net.URL;
 
 /**
  * Created by reon on 29/08/14.
@@ -31,14 +37,15 @@ import java.io.File;
 @RunWith(Arquillian.class)
 public class RESTEasyComponentTest {
     WebArchive test;
-//
+
     @Deployment
     public static WebArchive createDeployment() {
-//        MavenResolverSystem resolver = Maven.resolver().loadPomFromFile("pom.xml");
-        return ShrinkWrap.create(WebArchive.class, "test.war")
-//                .setWebXML(new File(WEBAPP_SRC, "WEB-INF/web.xml"))
+
+        return ShrinkWrap.create(WebArchive.class, "superBalik.war")
                 .addAsResource(new File("src/test/resources/applicationContext.xml"))
-                .setWebXML(new File("src/test/resources/web.xml"))
+                .addAsWebInfResource(new File("src/test/resources/web.xml"))
+//                .addAsWebInfResource(EmptyAsset.INSTANCE, "beans.xml")
+//                .addAsWebInfResource(new File("src/test/resources/jboss-web.xml"))
                 .addClasses(PrintService.class, TestBean.class)
                 .addPackage("org.apache.camel.component.resteasy")
                 .addPackage("org.apache.camel.component.resteasy.servlet")
@@ -56,28 +63,13 @@ public class RESTEasyComponentTest {
 
     }
 
+
     @Test
     public void testName() throws Exception {
+        System.out.println("TEEEEEST");
 
-        test = ShrinkWrap.create(WebArchive.class, "test.war")
-//                .setWebXML(new File(WEBAPP_SRC, "WEB-INF/web.xml"))
-                .addAsResource(new File("src/test/resources/applicationContext.xml"))
-                .setWebXML(new File("src/test/resources/web.xml"))
-                .addClasses(PrintService.class, TestBean.class)
-                .addPackage("org.apache.camel.component.resteasy")
-                .addPackage("org.apache.camel.component.resteasy.servlet")
-                .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()
-                        .withTransitivity().asFile())
-                .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
-        System.out.println(test.toString(true));
-        System.out.println("----------------------------------------------------------------------------------------");
 
-        test = ShrinkWrap.create(MavenImporter.class)
-                .loadPomFromFile("src/test/resources/pom.xml").importBuildOutput().as(WebArchive.class).addAsResource(new File("src/test/resources/applicationContext.xml"))
-                .setWebXML(new File("src/test/resources/web.xml"))
-                .addClasses(PrintService.class, TestBean.class).addPackage("org.apache.camel.component.resteasy")
-                .addPackage("org.apache.camel.component.resteasy.servlet").addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
-        System.out.println(test.toString(true));
+
 
     }
 
