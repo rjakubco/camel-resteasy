@@ -1,34 +1,18 @@
 package org.apache.camel.component.resteasy.test;
 
 
-import com.google.inject.Inject;
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
-import org.apache.camel.builder.RouteBuilder;
-
-import org.apache.camel.component.resteasy.test.beans.PrintService;
+import org.apache.camel.component.resteasy.test.beans.SimpleService;
 import org.apache.camel.component.resteasy.test.beans.TestBean;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.ArchiveAsset;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
-import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.impl.base.exporter.zip.ZipExporterImpl;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
-import org.jboss.shrinkwrap.resolver.api.maven.MavenResolverSystem;
-import org.jboss.shrinkwrap.resolver.api.maven.archive.importer.MavenImporter;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.core.Response;
 import java.io.File;
-import java.net.URL;
 
 /**
  * Created by reon on 29/08/14.
@@ -43,7 +27,7 @@ public class RESTEasyComponentTest {
         return ShrinkWrap.create(WebArchive.class, "test.war")
                 .addAsResource(new File("src/test/resources/applicationContext.xml"))
                 .addAsWebInfResource(new File("src/test/resources/web.xml"))
-                .addClasses(PrintService.class, TestBean.class)
+                .addClasses(SimpleService.class, TestBean.class)
                 .addPackage("org.apache.camel.component.resteasy")
                 .addPackage("org.apache.camel.component.resteasy.servlet")
                 .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()

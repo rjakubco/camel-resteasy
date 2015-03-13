@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -35,80 +36,59 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
     public Response populateResteasyRequestFromExchangeAndExecute(String uri, Exchange exchange, Map<String, String> parameters) {
         ResteasyClient client = new ResteasyClientBuilder().build();
 
-       String body = exchange.getIn().getBody(String.class);
+        String body = exchange.getIn().getBody(String.class);
 
         String mediaType = exchange.getIn().getHeader(Exchange.CONTENT_TYPE, String.class);
-
 
         ResteasyWebTarget target = client.target(uri);
 
         LOG.debug("Populate Resteasy request from exchange body: {} using media type {}", body, mediaType);
 
+        Invocation.Builder builder;
+        if(mediaType != null){
+            builder = target.request(mediaType);
+        } else{
+            builder = target.request();
+        }
+
+
+        for (Map.Entry<String, Object> entry : exchange.getIn().getHeaders().entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if (headerFilterStrategy != null
+                    && !headerFilterStrategy.applyFilterToCamelHeaders(key, value, exchange)) {
+                    builder.header(key, value);
+                LOG.debug("Populate Resteasy request from exchange header: {} value: {}", key, value);
+            }
+        }
+
+
+
 
         if(parameters.get("username") != null && parameters.get("password") != null){
             target.register(new BasicAuthentication(parameters.get("username"), parameters.get("password")));
         }
-
         LOG.debug("Basic authentication was applied");
 
         if(parameters.get("method").equals("GET")){
-            if(mediaType == null){
-
-                return target.request().get();
-            } else {
-                return target.request(mediaType).get();
-            }
+                return builder.get();
         }
         if(parameters.get("method").equals("POST")){
-            return  target.request(mediaType).post(Entity.entity(body, mediaType));
+            return  builder.post(Entity.entity(body, mediaType));
 
         }
         if(parameters.get("method").equals("PUT")){
-            return  target.request(mediaType).put(Entity.entity(body, mediaType));
+
+            return  builder.put(Entity.entity(body, mediaType));
         }
         if(parameters.get("method").equals("DELETE")){
-            return  target.request(mediaType).delete();
+            return  builder.delete();
         }
+        // TODO: add all methods becasue these 4 are not all
 
 
-
-
-////
-//        for (Map.Entry<String, Object> entry : exchange.getIn().getHeaders().entrySet()) {
-//            String key = entry.getKey();
-//            Object value = entry.getValue();
-//            if (!headerFilterStrategy.applyFilterToCamelHeaders(key, value, exchange)) {
-//                // Use forms only for GET and POST/x-www-form-urlencoded
-//                if (request.getMethod() == Method.GET || (request.getMethod() == Method.POST && mediaType == MediaType.APPLICATION_WWW_FORM)) {
-//                    if (key.startsWith("org.restlet.")) {
-//                        // put the org.restlet headers in attributes
-//                        request.getAttributes().put(key, value);
-//                    } else {
-//                        // put the user stuff in the form
-//                        form.add(key, value.toString());
-//                    }
-//                } else {
-//                    // For non-form post put all the headers in attributes
-//                    request.getAttributes().put(key, value);
-//                }
-//                LOG.debug("Populate Restlet request from exchange header: {} value: {}", key, value);
-//            }
-//        }
-////
-//        LOG.debug("Using Content Type: {} for POST data: {}", mediaType, body);
-//
-//        // Only URL Encode for GET and form POST
-//        if (request.getMethod() == Method.GET || (request.getMethod() == Method.POST && mediaType == MediaType.APPLICATION_WWW_FORM)) {
-//            request.setEntity(form.getWebRepresentation());
-//        } else {
-//            request.setEntity(body, mediaType);
-//        }
-//
-//        MediaType acceptedMediaType = exchange.getIn().getHeader(Exchange.ACCEPT_CONTENT_TYPE, MediaType.class);
-//        if (acceptedMediaType != null) {
-//            request.getClientInfo().getAcceptedMediaTypes().add(new Preference<MediaType>(acceptedMediaType));
-//        }
-        return  null;
+        // maybe throw exception because not method was correct
+        throw new IllegalArgumentException("Method for Resteasy client was not from list of supported methods");
     }
 
 
@@ -123,9 +103,10 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             target.register(new BasicAuthentication(parameters.get("username"), parameters.get("password")));
         }
 
-        LOG.info(exchange.getIn().getHeaders().toString());
-        LOG.info(parameters.toString());
-        LOG.debug("Basic authentication was applied");
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Basic authentication was applied");
+        }
+
 
         Class realClazz;
         Object object = null;
@@ -160,6 +141,7 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             // preserve headers from in by copying any non existing headers
             // to avoid overriding existing headers with old values
             MessageHelper.copyHeaders(exchange.getIn(), exchange.getOut(), false);
+            // TODO change exception handling
         } catch (ClassNotFoundException e) {
             exchange.getOut().setBody(ExceptionUtils.getStackTrace(e));
             LOG.error("Camel RESTEasy proxy exception", e);

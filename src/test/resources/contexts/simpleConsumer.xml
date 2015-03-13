@@ -9,12 +9,23 @@
       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <camelContext xmlns="http://camel.apache.org/schema/spring">
+
+        <!--cisty impl-->
         <route>
-            <from uri="resteasy:///simpleService/match/?servletName=resteasy-camel-servlet&amp;matchOnUriPrefix=true"/>
+            <from uri="resteasy:///simpleService/getMsg?servletName=resteasy-camel-servlet"/>
+            <to uri="bean:process"/>
+        </route>
+        <route>
+            <from uri="resteasy:///simpleService/getMsg2?servletName=resteasy-camel-servlet"/>
             <setBody>
-                <constant>Body set from camel route</constant>
+                <constant>Overriding output from Rest service</constant>
             </setBody>
         </route>
+        <route>
+            <from uri="resteasy:///simpleService/getMsg3?servletName=resteasy-camel-servlet"/>
+            <to uri="file://target/messageTest?fileName=response.txt"/>
+        </route>
+
     </camelContext>
 
     <bean id="process" class="org.apache.camel.component.resteasy.test.beans.TestBean"/>

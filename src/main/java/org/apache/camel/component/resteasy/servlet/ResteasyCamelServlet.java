@@ -151,11 +151,11 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
         if (consumer.getEndpoint().isDisableStreamCache()) {
             exchange.setProperty(Exchange.DISABLE_HTTP_STREAM_CACHE, Boolean.TRUE);
         }
-
+        super.service(httpServletRequest, httpServletResponse);
 
         if( ! getServletEndpoint(consumer).getProxy()){
             // If proxy option is false then there is implementation of RestEasy. If true then skip this because it is only proxy
-            super.service(httpServletRequest, httpServletResponse);
+
 
             // If request wasn't successful in resteasy then stop processing and return created response from resteasy
             if(httpServletResponse.getStatus() != 200){
@@ -176,6 +176,11 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
 
         String contextPath = consumer.getEndpoint().getPath();
         exchange.getIn().setHeader(ResteasyConstants.RESTEASY_CONTEXT_PATH, contextPath);
+
+
+        // Maybe send request to camel also for some logging or something
+        exchange.getIn().setHeader(ResteasyConstants.RESTEASY_HTTP_REQUEST, httpServletRequest);
+
 
         String httpPath = (String)exchange.getIn().getHeader(Exchange.HTTP_PATH);
         // here we just remove the CamelServletContextPath part from the HTTP_PATH
@@ -202,7 +207,7 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
                 LOG.trace("Writing response for exchangeId: {}", exchange.getExchangeId());
             }
 
-            // Reset buffer in response because it was sent to consumer for processing -> route handled response and return what it should
+            // Reset buffer in response because it was sent to consumer for processing -> route handled response and returned what it should
             if( !response.isEmpty() ){
                 httpServletResponse.resetBuffer();
             }

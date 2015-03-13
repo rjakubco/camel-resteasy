@@ -1,14 +1,21 @@
 package org.apache.camel.component.resteasy.test;
 
-import org.apache.camel.component.resteasy.test.beans.PrintService;
-import org.apache.camel.component.resteasy.test.beans.TestBean;
+import org.apache.camel.component.resteasy.test.beans.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.resteasy.client.jaxrs.ResteasyClient;
+import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
+import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.File;
 
 /**
@@ -16,17 +23,81 @@ import java.io.File;
  */
 @RunWith(Arquillian.class)
 public class ResteasyConsumerProxyTest {
+
+    private final static String URI = "http://localhost:8080/test/";
+
     @Deployment
     public static WebArchive createDeployment() {
 
         return ShrinkWrap.create(WebArchive.class, "test.war")
-                .addAsResource(new File("src/test/resources/applicationContext.xml"))
+                .addAsResource(new File("src/test/resources/contexts/consumerProxy.xml"), "applicationContext.xml")
                 .addAsWebInfResource(new File("src/test/resources/web.xml"))
-                .addClasses(PrintService.class, TestBean.class)
+                .addClasses(ProxyServiceInterface.class, ProxyBean.class, Customer.class)
                 .addPackage("org.apache.camel.component.resteasy")
                 .addPackage("org.apache.camel.component.resteasy.servlet")
                 .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()
                         .withTransitivity().asFile())
                 .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
+    }
+
+    @Test
+    public void testProxyOnlyFromCamel() throws Exception {
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(URI + "camel/address");
+        Response response = target.request().get();
+
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("Proxy address only from Camel", response.readEntity(String.class));
+
+    }
+
+    @Test
+    public void testProxyFromInterface() throws Exception {
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(URI + "proxy/get");
+        Response response = target.request().get();
+
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("Address from ProxyInterface", response.readEntity(String.class));
+
+    }
+
+    @Test
+    public void testProxyPostFromInterface() throws Exception {
+        Thread.sleep(60000);
+
+
+//        Customer customer = new Customer("Camel", "Rider", 1);
+//
+//        ResteasyClient client = new ResteasyClientBuilder().build();
+//        ResteasyWebTarget target = client.target(URI + "proxy/createCustomer");
+//        Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(customer, MediaType.APPLICATION_JSON_TYPE));
+//
+//        System.out.println();
+//        System.out.println(response.getStatusInfo());
+//        System.out.println(response.getStatus());
+//        System.out.println(response.getHeaders());
+////        System.out.println(response.readEntity(String.class));
+//        System.out.println();
+////        Assert.assertEquals(200, response.getStatus());
+////        Assert.assertEquals("Customer added : " + customer, response.readEntity(String.class));
+
+    }
+
+    @Test
+    public void testWrongMethodOnProxyInterface() throws Exception {
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(URI + "proxy/createCustomer");
+        Response response = target.request().get();
+
+//        Assert.assertEquals(405, response.getStatus());
+
+        System.out.println();
+        System.out.println(response.getStatusInfo());
+        System.out.println(response.getStatus());
+        System.out.println(response.getHeaders());
+        System.out.println(response.readEntity(String.class));
+        System.out.println();
+
     }
 }

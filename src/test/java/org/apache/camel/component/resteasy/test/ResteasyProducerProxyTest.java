@@ -1,6 +1,6 @@
 package org.apache.camel.component.resteasy.test;
 
-import org.apache.camel.component.resteasy.test.beans.PrintService;
+import org.apache.camel.component.resteasy.test.beans.SimpleService;
 import org.apache.camel.component.resteasy.test.beans.TestBean;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -22,7 +22,7 @@ public class ResteasyProducerProxyTest {
         return ShrinkWrap.create(WebArchive.class, "test.war")
                 .addAsResource(new File("src/test/resources/applicationContext.xml"))
                 .addAsWebInfResource(new File("src/test/resources/web.xml"))
-                .addClasses(PrintService.class, TestBean.class)
+                .addClasses(SimpleService.class, TestBean.class)
                 .addPackage("org.apache.camel.component.resteasy")
                 .addPackage("org.apache.camel.component.resteasy.servlet")
                 .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()

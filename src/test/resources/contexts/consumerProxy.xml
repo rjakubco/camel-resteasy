@@ -12,22 +12,32 @@
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:///customer/print?servletName=resteasy-camel-servlet"/>
-            <to uri="bean:process"/>
+            <from uri="resteasy:///camel/address?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+            <setBody>
+                <constant>Proxy address only from Camel</constant>
+            </setBody>
         </route>
         <route>
-            <from uri="resteasy:///customer/print?servletName=resteasy-camel-servlet"/>
+            <from uri="resteasy:///proxy/get?servletName=resteasy-camel-servlet&amp;proxy=true"/>
             <setBody>
-                <constant>len adresa z camelu</constant>
+                <constant>Address from ProxyInterface</constant>
+            </setBody>
+        </route>
+        <route>
+            <from uri="resteasy:///proxy/createCustomer?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+            <!--<to uri="bean:proxy"/>-->
+            <setBody>
+                <constant>Address from ProxyInterface2</constant>
             </setBody>
         </route>
     </camelContext>
 
-    <bean id="process" class="org.apache.camel.component.resteasy.test.beans.TestBean"/>
+    <bean id="proxy" class="org.apache.camel.component.resteasy.test.beans.ProxyBean"/>
 
 
 
     <bean id="resteasy" class="org.apache.camel.component.resteasy.ResteasyComponent">
+        <property name="proxyConsumersClasses" value="org.apache.camel.component.resteasy.test.beans.ProxyServiceInterface"/>
     </bean>
 
 </beans>
