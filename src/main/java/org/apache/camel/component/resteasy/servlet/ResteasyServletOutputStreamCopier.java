@@ -15,7 +15,7 @@ public class ResteasyServletOutputStreamCopier extends ServletOutputStream {
 
     public ResteasyServletOutputStreamCopier(OutputStream outputStream) {
         this.outputStream = outputStream;
-        this.copy = new ByteArrayOutputStream(1024);
+        this.copy = new ByteArrayOutputStream();
     }
 
     @Override

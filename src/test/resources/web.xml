@@ -22,14 +22,14 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
-    <filter>
-        <filter-name>Camel Response filter</filter-name>
-        <filter-class>org.apache.camel.component.resteasy.servlet.ResteasyResponseFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>Camel Response filter</filter-name>
-        <servlet-name>resteasy-camel-servlet</servlet-name>
-    </filter-mapping>
+    <!--<filter>-->
+        <!--<filter-name>Camel Response filter</filter-name>-->
+        <!--<filter-class>org.apache.camel.component.resteasy.servlet.ResteasyResponseFilter</filter-class>-->
+    <!--</filter>-->
+    <!--<filter-mapping>-->
+        <!--<filter-name>Camel Response filter</filter-name>-->
+        <!--<servlet-name>resteasy-camel-servlet</servlet-name>-->
+    <!--</filter-mapping>-->
 
     <servlet>
         <servlet-name>resteasy-camel-servlet</servlet-name>

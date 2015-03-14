@@ -9,6 +9,8 @@ import org.apache.camel.component.http.ServletResolveConsumerStrategy;
 import org.apache.camel.component.http.helper.HttpHelper;
 import org.apache.camel.component.resteasy.*;
 import org.apache.camel.impl.DefaultExchange;
+
+import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 
 import org.slf4j.Logger;
@@ -18,6 +20,7 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -151,28 +154,46 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
         if (consumer.getEndpoint().isDisableStreamCache()) {
             exchange.setProperty(Exchange.DISABLE_HTTP_STREAM_CACHE, Boolean.TRUE);
         }
-        super.service(httpServletRequest, httpServletResponse);
 
-        if( ! getServletEndpoint(consumer).getProxy()){
-            // If proxy option is false then there is implementation of RestEasy. If true then skip this because it is only proxy
+        // camelProxy is set to true then don't process in servlet. Just continue to camel route
+        if( !getServletEndpoint(consumer).getCamelProxy()){
+            super.service(httpServletRequest, httpServletResponse);
 
+        }
 
+        String response = "";
+
+        if(getServletEndpoint(consumer).getProxy()){
+            // Servlet is returning status code 204 if request was correct but there is no content -> if 204 continue to camel route
+            if(httpServletResponse.getStatus() != 200 && httpServletResponse.getStatus() != 204){
+                // If request wasn't successful in resteasy then stop processing and return created response from resteasy
+                return;
+            }
+
+            // Proxy is set to true
+            HttpHelper.setCharsetFromContentType(httpServletRequest.getContentType(), exchange);
+            HttpMessage m = new HttpMessage(exchange, httpServletRequest, httpServletResponse);
+
+            m.setBody(((ResteasyHttpServletRequestWrapper) httpServletRequest).getStream());
+            exchange.setIn(m);
+        } else{
             // If request wasn't successful in resteasy then stop processing and return created response from resteasy
             if(httpServletResponse.getStatus() != 200){
                 return;
             }
+
+            HttpHelper.setCharsetFromContentType(httpServletRequest.getContentType(), exchange);
+            HttpMessage m = new HttpMessage(exchange, httpServletRequest, httpServletResponse);
+
+            response = new String(((ResteasyHttpServletResponseWrapper) httpServletResponse).getCopy(), httpServletResponse.getCharacterEncoding());
+
+            m.setBody(((ResteasyHttpServletResponseWrapper) httpServletResponse).getStream());
+            exchange.setIn(m);
         }
+
         if (LOG.isTraceEnabled()) {
             LOG.trace("Copier service: " + new String(((ResteasyHttpServletResponseWrapper) httpServletResponse).getCopy(), httpServletResponse.getCharacterEncoding()));
         }
-
-        HttpHelper.setCharsetFromContentType(httpServletRequest.getContentType(), exchange);
-        HttpMessage m = new HttpMessage(exchange, httpServletRequest, httpServletResponse);
-
-        String response = new String(((ResteasyHttpServletResponseWrapper) httpServletResponse).getCopy(), httpServletResponse.getCharacterEncoding());
-
-        m.setBody(((ResteasyHttpServletResponseWrapper) httpServletResponse).getStream());
-        exchange.setIn(m);
 
         String contextPath = consumer.getEndpoint().getPath();
         exchange.getIn().setHeader(ResteasyConstants.RESTEASY_CONTEXT_PATH, contextPath);

@@ -9,8 +9,12 @@ import org.apache.camel.Processor;
 public class ProxyBean implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
+        // TODO this set up doesnt work
         Customer customer = exchange.getIn().getBody(Customer.class);
-        System.out.println(customer);
-        exchange.getOut().setBody("Customer added : " + customer);
+        String string = exchange.getIn().getBody(String.class);
+        System.out.println(string);
+        System.out.println("customer " + customer);
+        exchange.getOut().setBody("Customer added : " + string);
+        exchange.getOut().getHeaders().put("CamelHttpResponseCode", 200);
     }
 }

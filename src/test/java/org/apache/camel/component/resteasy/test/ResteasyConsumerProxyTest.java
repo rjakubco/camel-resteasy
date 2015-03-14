@@ -1,6 +1,7 @@
 package org.apache.camel.component.resteasy.test;
 
 import org.apache.camel.component.resteasy.test.beans.*;
+import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -37,8 +38,10 @@ public class ResteasyConsumerProxyTest {
                 .addPackage("org.apache.camel.component.resteasy.servlet")
                 .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()
                         .withTransitivity().asFile())
-                .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
+                .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile())
+        .addAsLibraries(Maven.resolver().resolve("commons-io:commons-io:2.4").withTransitivity().asFile());
     }
+
 
     @Test
     public void testProxyOnlyFromCamel() throws Exception {
@@ -57,30 +60,23 @@ public class ResteasyConsumerProxyTest {
         ResteasyWebTarget target = client.target(URI + "proxy/get");
         Response response = target.request().get();
 
+
         Assert.assertEquals(200, response.getStatus());
         Assert.assertEquals("Address from ProxyInterface", response.readEntity(String.class));
 
     }
 
+    // TODO using bean in camel route a getting body as Customer.class doesn't work -> need to investigate
     @Test
     public void testProxyPostFromInterface() throws Exception {
-        Thread.sleep(60000);
+        Customer customer = new Customer("Camel", "Rider", 1);
 
+        ResteasyClient client = new ResteasyClientBuilder().build();
+        ResteasyWebTarget target = client.target(URI + "proxy/createCustomer");
+        Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(customer, MediaType.APPLICATION_JSON_TYPE));
 
-//        Customer customer = new Customer("Camel", "Rider", 1);
-//
-//        ResteasyClient client = new ResteasyClientBuilder().build();
-//        ResteasyWebTarget target = client.target(URI + "proxy/createCustomer");
-//        Response response = target.request(MediaType.APPLICATION_JSON).post(Entity.entity(customer, MediaType.APPLICATION_JSON_TYPE));
-//
-//        System.out.println();
-//        System.out.println(response.getStatusInfo());
-//        System.out.println(response.getStatus());
-//        System.out.println(response.getHeaders());
-////        System.out.println(response.readEntity(String.class));
-//        System.out.println();
-////        Assert.assertEquals(200, response.getStatus());
-////        Assert.assertEquals("Customer added : " + customer, response.readEntity(String.class));
+        Assert.assertEquals(200, response.getStatus());
+        Assert.assertEquals("Customer added : {\"name\":\"Camel\",\"surname\":\"Rider\",\"id\":1}", response.readEntity(String.class));
 
     }
 
@@ -90,14 +86,7 @@ public class ResteasyConsumerProxyTest {
         ResteasyWebTarget target = client.target(URI + "proxy/createCustomer");
         Response response = target.request().get();
 
-//        Assert.assertEquals(405, response.getStatus());
-
-        System.out.println();
-        System.out.println(response.getStatusInfo());
-        System.out.println(response.getStatus());
-        System.out.println(response.getHeaders());
-        System.out.println(response.readEntity(String.class));
-        System.out.println();
+        Assert.assertEquals(405, response.getStatus());
 
     }
 }

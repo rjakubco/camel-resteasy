@@ -37,6 +37,9 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
     private Boolean proxy = false;
 
     @UriParam
+    private Boolean camelProxy = false;
+
+    @UriParam
     private Boolean OauthSecure;
 
     @UriParam
@@ -72,6 +75,14 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
 
     public void setProxy(Boolean proxy) {
         this.proxy = proxy;
+    }
+
+    public Boolean getCamelProxy() {
+        return camelProxy;
+    }
+
+    public void setCamelProxy(Boolean camelProxy) {
+        this.camelProxy = camelProxy;
     }
 
     public ResteasyEndpoint(String endPointURI, ResteasyComponent component, URI httpUri, HttpClientParams params, HttpConnectionManager httpConnectionManager,
