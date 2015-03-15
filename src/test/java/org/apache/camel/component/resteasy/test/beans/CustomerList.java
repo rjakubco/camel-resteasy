@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Created by roman on 13/03/15.
+ * Created by Roman Jakubco (rjakubco@redhat.com) on 13/03/15.
  */
 public class CustomerList {
     static Set<Customer> customerList = new HashSet<>();

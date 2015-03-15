@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.*;
 
 /**
- * Created by roman on 14/03/15.
+ * Created by Roman Jakubco (rjakubco@redhat.com) on 14/03/15.
  */
 public class ResteasyHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
@@ -59,28 +59,4 @@ public class ResteasyHttpServletRequestWrapper extends HttpServletRequestWrapper
             return null;
         }
     }
-
-
-//    private void cacheInputStream() throws IOException {
-//    /* Cache the inputstream in order to read it multiple times. For
-//     * convenience, I use apache.commons IOUtils
-//     */
-//        cachedBytes = new ByteArrayOutputStream();
-//        IOUtils.copy(super.getInputStream(), cachedBytes);
-//    }
-
-//    /* An inputstream which reads the cached request body */
-//    public class CachedServletInputStream extends ServletInputStream {
-//        private ByteArrayInputStream input;
-//
-//        public CachedServletInputStream() {
-//      /* create a new input stream from the cached request body */
-//            input = new ByteArrayInputStream(cachedBytes.toByteArray());
-//        }
-//
-//        @Override
-//        public int read() throws IOException {
-//            return input.read();
-//        }
-//    }
 }

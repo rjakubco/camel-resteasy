@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by roman on 09/03/15.
+ * Created by Roman Jakubco (rjakubco@redhat.com) on 09/03/15.
  */
 @RunWith(Arquillian.class)
 public class ResteasyConsumerTest {
@@ -110,7 +110,7 @@ public class ResteasyConsumerTest {
 
         Customer customer = new Customer("TestCreate", "TestCreate", customerId);
         Response response = createCustomer(customer);
-
+        System.out.println(response.readEntity(String.class));
         Assert.assertEquals(expectedResponse, response.readEntity(String.class));
 
         File file = new File("target/test/consumerTest/create.txt");

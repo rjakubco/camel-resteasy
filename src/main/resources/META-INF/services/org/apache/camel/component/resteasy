@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-class=org.apache.camel.component.resteasy.RESTEasyComponent
+class=org.apache.camel.component.resteasy.ResteasyComponent

@@ -21,7 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Created by roman on 13/03/15.
+ * Created by Roman Jakubco (rjakubco@redhat.com) on 13/03/15.
  */
 @RunWith(Arquillian.class)
 public class ResteasySimpleConsumerTest {

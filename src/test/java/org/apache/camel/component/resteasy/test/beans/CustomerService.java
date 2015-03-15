@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by roman on 13/03/15.
+ * Created by Roman Jakubco (rjakubco@redhat.com) on 13/03/15.
  */
 @Path("/customer")
 public class CustomerService {
@@ -19,12 +19,15 @@ public class CustomerService {
         list.add();
     }
 
+
+    @HEAD
     @GET
     @Produces("application/json")
     @Path("/getAll")
     public Response getAllCustomers() throws IOException, ServletException {
        return Response.status(200).entity(list.getCustomerList()).build();
     }
+
 
     @GET
     @Produces("application/json")
@@ -37,6 +40,7 @@ public class CustomerService {
             return Response.status(404).entity("Customer with given id doesn't exist").build();
         }
     }
+
 
     @DELETE
     @Path("/deleteCustomer")
@@ -51,7 +55,6 @@ public class CustomerService {
     @Path("/createCustomer")
     public Response createCustomer(Customer customer) throws IOException, ServletException {
         list.addCustomer(customer);
-        System.out.println(list.getCustomerList());
         return Response.status(200).entity("Customer added : " + customer).build();
     }
 
@@ -67,10 +70,31 @@ public class CustomerService {
         } else{
             return Response.status(404).entity("Customer with given id doesn't exist").build();
         }
-
-
-
     }
 
+
+    /*
+        Specific methods for servlets used in proxy producer test
+     */
+    // Really forced method for testing proxy producera with more parameters
+    @GET
+    @Produces("application/json")
+    @Path("/getSpecificThreeCustomers")
+    public Response getSpecificThreeCustomers(@QueryParam("c1") int customerId1, @QueryParam("c2") int customerId2, @QueryParam("c1") int customerId3) throws Exception {
+        List<Customer> customers = new ArrayList<>();
+        customers.add(list.getCustomer(customerId1));
+        customers.add(list.getCustomer(customerId2));
+        customers.add(list.getCustomer(customerId3));
+
+        return Response.status(200).entity(customers).build();
+    }
+
+    @GET
+    @Produces("application/json")
+    @Path("/getCustomerWithoutResponse")
+    public Customer getCustomerWithoutResponse(@QueryParam("c1") int customerId1) throws Exception {
+        Customer c = list.getCustomer(customerId1);
+        return c;
+    }
 
 }

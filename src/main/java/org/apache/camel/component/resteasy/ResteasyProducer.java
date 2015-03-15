@@ -33,11 +33,15 @@ public class ResteasyProducer extends DefaultProducer {
     public void process(Exchange exchange) throws Exception {
         ResteasyEndpoint endpoint = (ResteasyEndpoint) getEndpoint();
 
-        LOG.info("Uri pattern from endpoint: " + endpoint.getUriPattern());
+        LOG.debug("Uri pattern from endpoint: " + endpoint.getUriPattern());
         String resourceUri = buildUri(endpoint, exchange);
-        LOG.info("Final URI: " + resourceUri);
 
-        Map<String, String> parameters = getParamaters(exchange, endpoint);
+        LOG.debug("Final URI: " + resourceUri);
+
+        // setting headerFilterStrategy from endpoint to httpBinding maybe TODO upgrade
+        endpoint.getRestEasyHttpBinding().setHeaderFilterStrategy(endpoint.getHeaderFilterStrategy());
+
+        Map<String, String> parameters = getParameters(exchange, endpoint);
 
         if(endpoint.getProxyClientClass() != null){
             // Proxy producer
@@ -122,7 +126,7 @@ public class ResteasyProducer extends DefaultProducer {
 
     }
 
-    protected static Map<String, String> getParamaters(Exchange exchange, ResteasyEndpoint endpoint){
+    protected static Map<String, String> getParameters(Exchange exchange, ResteasyEndpoint endpoint){
         Map<String, String> parameters = new HashMap<String, String>();
 
         // Get method which should be used on producer

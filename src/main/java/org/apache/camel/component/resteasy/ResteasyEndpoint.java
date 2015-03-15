@@ -5,6 +5,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.component.http.HttpEndpoint;
+import org.apache.camel.impl.DefaultHeaderFilterStrategy;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.camel.spi.HeaderFilterStrategyAware;
 import org.apache.camel.spi.UriParam;
@@ -54,11 +55,14 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
     private int port;
     private String uriPattern;
 
-    private HeaderFilterStrategy headerFilterStrategy;
+    // Using default camel headerFilterStrategy -> possibility to create your own strategy and set it on endpoint
+    private HeaderFilterStrategy headerFilterStrategy = new DefaultHeaderFilterStrategy();
 
     @UriParam
     private boolean throwExceptionOnFailure = true;
     private boolean disableStreamCache;
+
+
 
 
     public String getProxyMethod() {
@@ -217,13 +221,11 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
 
     @Override
     public HeaderFilterStrategy getHeaderFilterStrategy() {
-        return null;
+        return headerFilterStrategy;
     }
 
     @Override
-    public void setHeaderFilterStrategy(HeaderFilterStrategy strategy) {
-
+    public void setHeaderFilterStrategy(HeaderFilterStrategy headerFilterStrategy) {
+        this.headerFilterStrategy = headerFilterStrategy;
     }
-
-
 }

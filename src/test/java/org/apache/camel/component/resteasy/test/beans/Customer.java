@@ -1,7 +1,7 @@
 package org.apache.camel.component.resteasy.test.beans;
 
 /**
- * Created by roman on 13/03/15.
+ * Created by Roman Jakubco (rjakubco@redhat.com) on 13/03/15.
  */
 public class Customer {
     private String name;

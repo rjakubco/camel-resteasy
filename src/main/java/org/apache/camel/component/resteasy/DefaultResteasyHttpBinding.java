@@ -2,6 +2,7 @@ package org.apache.camel.component.resteasy;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.component.http.HttpHeaderFilterStrategy;
+import org.apache.camel.impl.DefaultHeaderFilterStrategy;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.camel.util.MessageHelper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -14,13 +15,13 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author : Roman Jakubco (rjakubco@redhat.com)
@@ -29,14 +30,25 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultResteasyHttpBinding.class);
 
-    //use default filter strategy from Camel HTTP
-    private HeaderFilterStrategy headerFilterStrategy = new HttpHeaderFilterStrategy();
+
+
+    private HeaderFilterStrategy headerFilterStrategy;
+
+    public HeaderFilterStrategy getHeaderFilterStrategy() {
+        return headerFilterStrategy;
+    }
+
+    @Override
+    public void setHeaderFilterStrategy(HeaderFilterStrategy headerFilterStrategy) {
+        this.headerFilterStrategy = headerFilterStrategy;
+    }
 
     @Override
     public Response populateResteasyRequestFromExchangeAndExecute(String uri, Exchange exchange, Map<String, String> parameters) {
         ResteasyClient client = new ResteasyClientBuilder().build();
-
         String body = exchange.getIn().getBody(String.class);
+
+        LOG.debug("Body in producer: " + body);
 
         String mediaType = exchange.getIn().getHeader(Exchange.CONTENT_TYPE, String.class);
 
@@ -69,26 +81,36 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             target.register(new BasicAuthentication(parameters.get("username"), parameters.get("password")));
         }
         LOG.debug("Basic authentication was applied");
+        String method = parameters.get("method");
 
-        if(parameters.get("method").equals("GET")){
+        if(method.equals("GET")){
                 return builder.get();
         }
-        if(parameters.get("method").equals("POST")){
+        if(method.equals("POST")){
             return  builder.post(Entity.entity(body, mediaType));
 
         }
-        if(parameters.get("method").equals("PUT")){
+        if(method.equals("PUT")){
 
             return  builder.put(Entity.entity(body, mediaType));
         }
-        if(parameters.get("method").equals("DELETE")){
+        if(method.equals("DELETE")){
             return  builder.delete();
         }
-        // TODO: add all methods becasue these 4 are not all
+        if(method.equals("OPTIONS")){
+            return  builder.options();
+        }
+        if(method.equals("TRACE")){
+            return  builder.trace();
+        }
+        if(method.equals("HEAD")){
+            return  builder.head();
+        }
+
 
 
         // maybe throw exception because not method was correct
-        throw new IllegalArgumentException("Method for Resteasy client was not from list of supported methods");
+        throw new IllegalArgumentException("Method '" + method +"' is not supported method");
     }
 
 
@@ -161,14 +183,35 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
     public void populateExchangeFromResteasyResponse(Exchange exchange, Response response){
         // set response code
         int responseCode = response.getStatus();
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(Exchange.HTTP_RESPONSE_CODE, responseCode);
+//
+        for (String key : response.getHeaders().keySet()) {
+            Object value = response.getHeaders().get(key);
+            if (headerFilterStrategy != null
+                    && !headerFilterStrategy.applyFilterToCamelHeaders(key, value, exchange)) {
+                headers.put(key,value);
+                LOG.debug("Populate Camel exchange from response: {} value: {}", key, value);
+            }
+        }
 
-        exchange.getOut().setHeader(Exchange.HTTP_RESPONSE_CODE, responseCode);
+
 
         // set resteasy response as header so end user have access to it if needed
-        exchange.getOut().setHeader(ResteasyConstants.RESTEASY_RESPONSE, response);
+        headers.put(ResteasyConstants.RESTEASY_RESPONSE, response);
+        exchange.getOut().setHeaders(headers);
 
         //TODO not sure if this is satisfactory, only converting the Entity to String.
-        exchange.getOut().setBody(response.readEntity(String.class));
+        LOG.debug("Headers from exchange.getIn() : " + exchange.getIn().getHeaders().toString());
+        LOG.debug("Headers from exchange.getOut() before copying : " + exchange.getOut().getHeaders().toString());
+        LOG.debug("Header from response : " + response.getHeaders().toString());
+
+        if(response.hasEntity()){
+            exchange.getOut().setBody(response.readEntity(String.class));
+        } else{
+            exchange.getOut().setBody(response.getStatusInfo());
+        }
+
 
         // preserve headers from in by copying any non existing headers
         // to avoid overriding existing headers with old values

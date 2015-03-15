@@ -6,7 +6,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 /**
- * Created by roman on 17/11/14.
+ * Created by Roman Jakubco (rjakubco@redhat.com) on 17/11/14.
  */
 @Path("/proxy")
 public interface ProxyServiceInterface {

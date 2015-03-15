@@ -20,7 +20,7 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 
 /**
- * Created by roman on 09/03/15.
+ * Created by Roman Jakubco (rjakubco@redhat.com) on 09/03/15.
  */
 @RunWith(Arquillian.class)
 public class ResteasyConsumerProxyTest {

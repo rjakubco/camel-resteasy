@@ -4,7 +4,7 @@ import javax.servlet.ServletInputStream;
 import java.io.*;
 
 /**
- * Created by roman on 14/03/15.
+ * Created by Roman Jakubco (rjakubco@redhat.com) on 14/03/15.
  */
 public class ResteasyServletInputStreamCopier extends ServletInputStream {
     private InputStream input;
@@ -21,7 +21,7 @@ public class ResteasyServletInputStreamCopier extends ServletInputStream {
     @Override
     public int read() throws IOException {
         int i = input.read();
-        if(i > 0){
+        if(i > -1){
             copy.write(i);
         }
         return i;
