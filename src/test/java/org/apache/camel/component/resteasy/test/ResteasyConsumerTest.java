@@ -3,6 +3,7 @@ package org.apache.camel.component.resteasy.test;
 import org.apache.camel.component.resteasy.test.beans.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.junit.InSequence;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
@@ -77,6 +78,7 @@ public class ResteasyConsumerTest {
     }
 
     @Test
+    @InSequence(1)
     public void testGetAll() throws Exception {
         String expectedResponse = "[{\"name\":\"Roman\",\"surname\":\"Jakubco\",\"id\":1},{\"name\":\"Camel\",\"surname\":\"Rider\",\"id\":2}]";
 

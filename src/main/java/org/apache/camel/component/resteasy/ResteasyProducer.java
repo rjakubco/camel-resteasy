@@ -39,7 +39,7 @@ public class ResteasyProducer extends DefaultProducer {
         LOG.debug("Final URI: " + resourceUri);
 
         // setting headerFilterStrategy from endpoint to httpBinding maybe TODO upgrade
-        endpoint.getRestEasyHttpBinding().setHeaderFilterStrategy(endpoint.getHeaderFilterStrategy());
+//        endpoint.getRestEasyHttpBinding().setHeaderFilterStrategy(endpoint.getHeaderFilterStrategy());
 
         Map<String, String> parameters = getParameters(exchange, endpoint);
 

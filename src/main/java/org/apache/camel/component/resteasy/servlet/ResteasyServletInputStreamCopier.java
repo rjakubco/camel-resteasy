@@ -21,7 +21,7 @@ public class ResteasyServletInputStreamCopier extends ServletInputStream {
     @Override
     public int read() throws IOException {
         int i = input.read();
-        if(i > -1){
+        if(i > 0){
             copy.write(i);
         }
         return i;
