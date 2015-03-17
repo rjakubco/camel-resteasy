@@ -29,7 +29,10 @@
         </route>
         <route>
             <from uri="resteasy:///customer/createCustomer?servletName=resteasy-camel-servlet"/>
-            <to uri="file://target/test/consumerTest?fileName=create.txt"/>
+            <setBody>
+                <constant>AHOJ PAPA DOVI DOBRYDEN DOBRYVECER FUCK THAT IN THAT AND THAT AND MAYBE IN THAT AND ALSO IN THAT BECAUSE FUCK EVERYTHING</constant>
+            </setBody>
+            <!--<to uri="file://target/test/consumerTest?fileName=create.txt"/>-->
         </route>
 
     </camelContext>
