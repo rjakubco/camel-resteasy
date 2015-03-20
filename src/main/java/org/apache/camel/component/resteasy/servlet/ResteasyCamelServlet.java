@@ -158,7 +158,7 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
         // camelProxy is set to true then don't process in servlet. Just continue to camel route
         // if camelProxy is true then check httpMethodRestrict
         if( getServletEndpoint(consumer).getCamelProxy()){
-            if(! httpServletRequest.getMethod().equals(getServletEndpoint(consumer).getHttpMethodRestrict())){
+            if(getServletEndpoint(consumer).getHttpMethodRestrict() != null && !httpServletRequest.getMethod().equals(getServletEndpoint(consumer).getHttpMethodRestrict())){
                 httpServletResponse.setStatus(405);
                 return;
             }
