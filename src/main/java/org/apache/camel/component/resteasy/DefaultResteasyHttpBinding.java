@@ -137,16 +137,20 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             Object simple = target.proxy(realClazz);
 
 
+            // TODO think about sending the paramaters in body and not in headers as possible alternative
             ArrayList headerParams = exchange.getIn().getHeader(ResteasyConstants.RESTEASY_PROXY_METHOD_PARAMS, ArrayList.class);
+
             if(headerParams != null){
+                Object[] args = new Object[headerParams.size()];
                 Class[] paramsClasses = new Class[headerParams.size()];
                 for(int i = 0; i < headerParams.size(); i++){
-                    LOG.trace(headerParams.get(i).getClass().toString());
+                    LOG.debug(headerParams.get(i).getClass().toString());
                     paramsClasses[i] = headerParams.get(i).getClass();
+                    args[i] = headerParams.get(i);
                 }
 
                 Method m = simple.getClass().getMethod(parameters.get("proxyMethodName"), paramsClasses);
-                object = m.invoke(simple, "test");
+                object = m.invoke(simple, args);
             } else{
                 Method m = simple.getClass().getMethod(parameters.get("proxyMethodName"), new Class[] {});
                 object = m.invoke(simple, new Object[] {});
@@ -164,17 +168,10 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             // to avoid overriding existing headers with old values
             MessageHelper.copyHeaders(exchange.getIn(), exchange.getOut(), false);
             // TODO change exception handling
-        } catch (ClassNotFoundException e) {
-            exchange.getOut().setBody(ExceptionUtils.getStackTrace(e));
-            LOG.error("Camel RESTEasy proxy exception", e);
-        } catch (InvocationTargetException e) {
-            exchange.getOut().setBody(ExceptionUtils.getStackTrace(e));
-            LOG.error("Camel RESTEasy proxy exception", e);
-        } catch (NoSuchMethodException e) {
-            exchange.getOut().setBody(ExceptionUtils.getStackTrace(e));
-            LOG.error("Camel RESTEasy proxy exception", e);
-        } catch (IllegalAccessException e) {
-            exchange.getOut().setBody(ExceptionUtils.getStackTrace(e));
+        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+
+            exchange.getOut().getHeaders().put(ResteasyConstants.RESTEASY_PROXY_PRODUCER_EXCEPTION, ExceptionUtils.getStackTrace(e));
+            exchange.getOut().setBody(e);
             LOG.error("Camel RESTEasy proxy exception", e);
         }
     }
@@ -189,7 +186,7 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
         for (String key : response.getHeaders().keySet()) {
             Object value = response.getHeaders().get(key);
             if (headerFilterStrategy != null
-                    && !headerFilterStrategy.applyFilterToCamelHeaders(key, value, exchange)) {
+                    && !headerFilterStrategy.applyFilterToExternalHeaders(key, value, exchange)) {
                 headers.put(key,value);
                 LOG.debug("Populate Camel exchange from response: {} value: {}", key, value);
             }

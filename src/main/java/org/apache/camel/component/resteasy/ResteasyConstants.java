@@ -12,6 +12,7 @@ public final class ResteasyConstants {
     public final static String RESTEASY_RESPONSE =  "CamelResteasyResponse";
     public final static String RESTEASY_HTTP_METHOD = "CamelResteasyHttpMethod";
     public final static String RESTEASY_HTTP_REQUEST = "CamelResteasyHttpRequest";
+    public final static String RESTEASY_PROXY_PRODUCER_EXCEPTION = "CamelResteasyProxyProducerException";
 //    public final static String  = "";
 
 }

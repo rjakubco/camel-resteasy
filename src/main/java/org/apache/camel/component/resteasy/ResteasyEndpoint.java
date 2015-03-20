@@ -55,8 +55,8 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
     private int port;
     private String uriPattern;
 
-    // Using default camel headerFilterStrategy -> possibility to create your own strategy and set it on endpoint
-//    private HeaderFilterStrategy headerFilterStrategy = new DefaultHeaderFilterStrategy();
+//    Using default camel headerFilterStrategy -> possibility to create your own strategy and set it on endpoint
+    private HeaderFilterStrategy headerFilterStrategy = new ResteasyHeaderFilterStrategy();
 
     @UriParam
     private boolean throwExceptionOnFailure = true;
@@ -219,13 +219,13 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
         return true;
     }
 
-//    @Override
-//    public HeaderFilterStrategy getHeaderFilterStrategy() {
-//        return headerFilterStrategy;
-//    }
-//
-//    @Override
-//    public void setHeaderFilterStrategy(HeaderFilterStrategy headerFilterStrategy) {
-//        this.headerFilterStrategy = headerFilterStrategy;
-//    }
+    @Override
+    public HeaderFilterStrategy getHeaderFilterStrategy() {
+        return headerFilterStrategy;
+    }
+
+    @Override
+    public void setHeaderFilterStrategy(HeaderFilterStrategy headerFilterStrategy) {
+        this.headerFilterStrategy = headerFilterStrategy;
+    }
 }

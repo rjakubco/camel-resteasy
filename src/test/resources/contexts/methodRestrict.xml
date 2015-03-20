@@ -12,22 +12,18 @@
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:///customer/print?servletName=resteasy-camel-servlet"/>
-            <to uri="bean:process"/>
-        </route>
-        <route>
-            <from uri="resteasy:///customer/print?servletName=resteasy-camel-servlet"/>
+            <from uri="resteasy:///method/restrict?servletName=resteasy-camel-servlet&amp;proxy=true&amp;camelProxy=true&amp;httpMethodRestrict=DELETE"/>
             <setBody>
-                <constant>len adresa z camelu</constant>
+                <constant>Response from httpMethodRestrict</constant>
             </setBody>
         </route>
     </camelContext>
 
-    <bean id="process" class="org.apache.camel.component.resteasy.test.beans.TestBean"/>
 
 
 
     <bean id="resteasy" class="org.apache.camel.component.resteasy.ResteasyComponent">
+
     </bean>
 
 </beans>

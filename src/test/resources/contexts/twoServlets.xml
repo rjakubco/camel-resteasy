@@ -12,20 +12,15 @@
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:///customer/print?servletName=resteasy-camel-servlet"/>
-            <to uri="bean:process"/>
+            <from uri="resteasy:///simpleServiceSecure/getMsg?servletName=resteasy-servlet-1"/>
+            <to uri="file://target/test/servlet1/consumerTest?fileName=all.txt"/>
         </route>
         <route>
-            <from uri="resteasy:///customer/print?servletName=resteasy-camel-servlet"/>
-            <setBody>
-                <constant>len adresa z camelu</constant>
-            </setBody>
+            <from uri="resteasy:///simpleServiceSecure/getMsg?servletName=resteasy-servlet-2"/>
+            <to uri="file://target/test/servlet2/consumerTest?fileName=all.txt"/>
         </route>
+
     </camelContext>
-
-    <bean id="process" class="org.apache.camel.component.resteasy.test.beans.TestBean"/>
-
-
 
     <bean id="resteasy" class="org.apache.camel.component.resteasy.ResteasyComponent">
     </bean>

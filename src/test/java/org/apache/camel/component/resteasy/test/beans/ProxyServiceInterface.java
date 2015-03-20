@@ -11,6 +11,7 @@ import java.io.IOException;
 @Path("/proxy")
 public interface ProxyServiceInterface {
     @GET
+    @Consumes("text/plain")
     @Path("/get")
     public Response getProxy();
 
