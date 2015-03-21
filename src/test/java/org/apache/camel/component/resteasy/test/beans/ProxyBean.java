@@ -4,7 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 13/03/15.
+ * @author : Roman Jakubco (rjakubco@redhat.com).
  */
 public class ProxyBean implements Processor {
     @Override

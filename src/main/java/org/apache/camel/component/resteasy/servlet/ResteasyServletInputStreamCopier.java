@@ -1,10 +1,14 @@
 package org.apache.camel.component.resteasy.servlet;
 
 import javax.servlet.ServletInputStream;
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 14/03/15.
+ * Class for copying input stream from HttpRequest
+ *
+ * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class ResteasyServletInputStreamCopier extends ServletInputStream {
     private InputStream input;

@@ -1,6 +1,8 @@
 package org.apache.camel.component.resteasy.test;
 
-import org.apache.camel.component.resteasy.test.beans.*;
+import org.apache.camel.component.resteasy.test.beans.Customer;
+import org.apache.camel.component.resteasy.test.beans.CustomerList;
+import org.apache.camel.component.resteasy.test.beans.CustomerService;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.junit.InSequence;
@@ -8,10 +10,7 @@ import org.jboss.resteasy.client.jaxrs.ResteasyClient;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.impl.base.exporter.ExplodedExporterImpl;
-import org.jboss.shrinkwrap.impl.base.exporter.zip.ZipExporterImpl;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Assert;
 import org.junit.Test;
@@ -22,11 +21,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 09/03/15.
+ * @author : Roman Jakubco (rjakubco@redhat.com).
  */
 @RunWith(Arquillian.class)
 public class ResteasyConsumerTest {

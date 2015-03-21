@@ -1,14 +1,18 @@
 package org.apache.camel.component.resteasy.servlet;
 
-import org.apache.commons.io.IOUtils;
-
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 14/03/15.
+ * Custom HttpServletRequestWrapper used for creating request with cached body for better manipulation in
+ * ResteasyCamelServlet (ResteasyConsumer).
+ *
+ * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class ResteasyHttpServletRequestWrapper extends HttpServletRequestWrapper {
 

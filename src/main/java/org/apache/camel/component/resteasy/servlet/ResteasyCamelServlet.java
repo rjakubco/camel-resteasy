@@ -9,10 +9,7 @@ import org.apache.camel.component.http.ServletResolveConsumerStrategy;
 import org.apache.camel.component.http.helper.HttpHelper;
 import org.apache.camel.component.resteasy.*;
 import org.apache.camel.impl.DefaultExchange;
-
-import org.apache.commons.io.IOUtils;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +17,6 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
@@ -31,6 +27,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
+ * Class extending HttpServletDispatcher from Resteasy and representing servlet used as Camel Consumer. This servlet
+ * needs to be used in application if you want to use Camel Resteasy consumer in your camel routes.
+ *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class ResteasyCamelServlet extends HttpServletDispatcher {
@@ -38,13 +37,16 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
 
     private String servletName;
 
-    private ServletResolveConsumerStrategy servletResolveConsumerStrategy = new HttpServletResolveConsumerStrategy();
     private final ConcurrentMap<String, HttpConsumer> consumers = new ConcurrentHashMap<String, HttpConsumer>();
 
     private static final Logger LOG = LoggerFactory.getLogger(ResteasyCamelServlet.class);
 
 
-
+    /**
+     *
+     * @param servletConfig
+     * @throws ServletException
+     */
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
         super.init(servletConfig);
@@ -88,14 +90,13 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
         }
     }
 
-    private ResteasyEndpoint getServletEndpoint(HttpConsumer consumer) {
-        if (!(consumer.getEndpoint() instanceof ResteasyEndpoint)) {
-            throw new RuntimeException("Invalid consumer type. Must be RESTEasyEndpoint but is "
-                    + consumer.getClass().getName());
-        }
-        return (ResteasyEndpoint)consumer.getEndpoint();
-    }
-
+    /**
+     *
+     * @param httpServletRequest
+     * @param httpServletResponse
+     * @throws ServletException
+     * @throws IOException
+     */
     @Override
     protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         // From camel servlet
@@ -239,7 +240,6 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
                 httpServletResponse.resetBuffer();
             }
 
-
             consumer.getBinding().writeResponse(exchange, httpServletResponse);
 
         } catch (IOException e) {
@@ -249,44 +249,56 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
             LOG.error("Error processing request", e);
             throw new ServletException(e);
         }
-
     }
 
 
+    /**
+     *
+     * @param consumer
+     */
     public void connect(HttpConsumer consumer) {
-
-//        ResteasyEndpoint endpoint = getServletEndpoint(consumer);
         consumers.put(consumer.getPath(), consumer);
-
     }
 
+    /**
+     *
+     */
     public void destroy() {
         DefaultHttpRegistry.removeHttpRegistry(getServletName());
         if (httpRegistry != null) {
             httpRegistry.unregister(this);
             httpRegistry = null;
         }
-        LOG.info("Destroyed CamelHttpTransportServlet[{}]", getServletName());
+        LOG.info("Destroyed CamelResteasyServlet[{}]", getServletName());
     }
 
+    /**
+     *
+     * @param consumer
+     */
     public void disconnect(HttpConsumer consumer) {
         LOG.info("Disconnecting consumer: {}", consumer);
         consumers.remove(consumer.getPath());
     }
 
-    public String getServletName() {
-        return servletName;
+    /**
+     *
+     * @param consumer
+     * @return
+     */
+    protected ResteasyEndpoint getServletEndpoint(HttpConsumer consumer) {
+        if (!(consumer.getEndpoint() instanceof ResteasyEndpoint)) {
+            throw new RuntimeException("Invalid consumer type. Must be RESTEasyEndpoint but is "
+                    + consumer.getClass().getName());
+        }
+        return (ResteasyEndpoint)consumer.getEndpoint();
     }
 
-    public void setServletName(String servletName) {
-        this.servletName = servletName;
-    }
-
-
-    public Map<String, HttpConsumer> getConsumers() {
-        return Collections.unmodifiableMap(consumers);
-    }
-
+    /**
+     *
+     * @param request
+     * @return
+     */
     protected HttpConsumer resolve(HttpServletRequest request) {
         String path = request.getPathInfo();
         if (path == null) {
@@ -303,6 +315,18 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
             }
         }
         return answer;
+    }
+
+    public String getServletName() {
+        return servletName;
+    }
+
+    public void setServletName(String servletName) {
+        this.servletName = servletName;
+    }
+
+    public Map<String, HttpConsumer> getConsumers() {
+        return Collections.unmodifiableMap(consumers);
     }
 }
 

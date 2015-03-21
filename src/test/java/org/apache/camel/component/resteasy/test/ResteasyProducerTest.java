@@ -1,18 +1,18 @@
 package org.apache.camel.component.resteasy.test;
 
 
-import com.google.inject.Inject;
 import org.apache.camel.CamelContext;
 import org.apache.camel.CamelExecutionException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
-import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.component.resteasy.ResteasyComponent;
 import org.apache.camel.component.resteasy.ResteasyConstants;
-import org.apache.camel.component.resteasy.ResteasyEndpoint;
-import org.apache.camel.component.resteasy.test.beans.*;
+import org.apache.camel.component.resteasy.test.beans.Customer;
+import org.apache.camel.component.resteasy.test.beans.CustomerList;
+import org.apache.camel.component.resteasy.test.beans.CustomerService;
+import org.apache.camel.component.resteasy.test.beans.TestBean;
 import org.apache.camel.spi.DataFormat;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -28,11 +28,10 @@ import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 09/03/15.
+ * @author : Roman Jakubco (rjakubco@redhat.com).
  */
 @RunWith(Arquillian.class)
 public class ResteasyProducerTest  extends CamelTestSupport{

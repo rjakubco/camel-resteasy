@@ -1,6 +1,5 @@
 package org.apache.camel.component.resteasy.test.beans;
 
-import javax.annotation.security.RolesAllowed;
 import javax.servlet.ServletException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -8,7 +7,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 /**
- * Created by roman on 20/03/15.
+ * @author : Roman Jakubco (rjakubco@redhat.com).
  */
 @Path("/numberOne/simpleServiceSecure")
 public class ServletOneService {

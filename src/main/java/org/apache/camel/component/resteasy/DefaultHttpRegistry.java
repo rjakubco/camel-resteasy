@@ -26,6 +26,8 @@ import javax.servlet.Servlet;
 import java.util.*;
 
 /**
+ * The default implementation of HttpRegistry interface
+ *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class DefaultHttpRegistry implements HttpRegistry {
@@ -40,9 +42,12 @@ public class DefaultHttpRegistry implements HttpRegistry {
         consumers = new HashSet<HttpConsumer>();
         providers = new HashSet<ResteasyCamelServlet>();
     }
-    
+
     /**
      * Lookup or create a new registry if none exists with the given name
+     *
+     * @param name name of the registry
+     * @return newly created or found HttpRegistry
      */
     public static synchronized HttpRegistry getHttpRegistry(String name) {
         HttpRegistry answer = registries.get(name);
@@ -53,8 +58,11 @@ public class DefaultHttpRegistry implements HttpRegistry {
         return answer;
     }
 
+
     /**
      * Removes the http registry with the given name
+     *
+     * @param name name of the HttpRegistry
      */
     public static synchronized void removeHttpRegistry(String name) {
         registries.remove(name);
@@ -81,17 +89,18 @@ public class DefaultHttpRegistry implements HttpRegistry {
             provider.disconnect(consumer);
         }
     }
-    
-    @SuppressWarnings("rawtypes")
-    public void register(ResteasyCamelServlet provider, Map properties) {
-        ResteasyCamelServlet camelServlet = provider;
-        camelServlet.setServletName((String) properties.get("servlet-name"));
-        register(camelServlet);
-    }
 
-    public void unregister(ResteasyCamelServlet provider, Map<String, Object> properties) {
-        unregister(provider);
-    }
+    // TODO probably useless
+//    @SuppressWarnings("rawtypes")
+//    public void register(ResteasyCamelServlet provider, Map properties) {
+//        ResteasyCamelServlet camelServlet = provider;
+//        camelServlet.setServletName((String) properties.get("servlet-name"));
+//        register(camelServlet);
+//    }
+    // TODO probably useless
+//    public void unregister(ResteasyCamelServlet provider, Map<String, Object> properties) {
+//        unregister(provider);
+//    }
     
     @Override
     public void register(ResteasyCamelServlet provider) {
@@ -122,16 +131,17 @@ public class DefaultHttpRegistry implements HttpRegistry {
         return null;
     }
 
-    public void setServlets(List<Servlet> servlets) {
-        providers.clear();
-        for (Servlet servlet : servlets) {
-            if (servlet instanceof CamelServlet) {
-                providers.add((ResteasyCamelServlet) servlet);
-            }
-        }
-    }
-
-    public Set<HttpConsumer> getConsumers() {
-        return consumers;
-    }
+    // TODO probably useless
+//    public void setServlets(List<Servlet> servlets) {
+//        providers.clear();
+//        for (Servlet servlet : servlets) {
+//            if (servlet instanceof CamelServlet) {
+//                providers.add((ResteasyCamelServlet) servlet);
+//            }
+//        }
+//    }
+    // TODO probably useless
+//    public Set<HttpConsumer> getConsumers() {
+//        return consumers;
+//    }
 }

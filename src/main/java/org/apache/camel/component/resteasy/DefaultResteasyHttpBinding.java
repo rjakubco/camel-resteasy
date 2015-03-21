@@ -1,8 +1,6 @@
 package org.apache.camel.component.resteasy;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.component.http.HttpHeaderFilterStrategy;
-import org.apache.camel.impl.DefaultHeaderFilterStrategy;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.camel.util.MessageHelper;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -15,22 +13,21 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
+ * The default Resteasy binding implementation
+ *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultResteasyHttpBinding.class);
-
-
 
     private HeaderFilterStrategy headerFilterStrategy;
 
@@ -74,9 +71,6 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             }
         }
 
-
-
-
         if(parameters.get("username") != null && parameters.get("password") != null){
             target.register(new BasicAuthentication(parameters.get("username"), parameters.get("password")));
         }
@@ -88,10 +82,8 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
         }
         if(method.equals("POST")){
             return  builder.post(Entity.entity(body, mediaType));
-
         }
         if(method.equals("PUT")){
-
             return  builder.put(Entity.entity(body, mediaType));
         }
         if(method.equals("DELETE")){
@@ -107,8 +99,6 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             return  builder.head();
         }
 
-
-
         // maybe throw exception because not method was correct
         throw new IllegalArgumentException("Method '" + method +"' is not supported method");
     }
@@ -120,7 +110,6 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
 
         ResteasyWebTarget target = client.target(uri);
 
-
         if(parameters.get("username") != null && parameters.get("password") != null){
             target.register(new BasicAuthentication(parameters.get("username"), parameters.get("password")));
         }
@@ -129,15 +118,12 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             LOG.trace("Basic authentication was applied");
         }
 
-
         Class realClazz;
         Object object = null;
         try {
             realClazz = Class.forName(parameters.get("proxyClassName"));
             Object simple = target.proxy(realClazz);
-
-
-            // TODO think about sending the paramaters in body and not in headers as possible alternative
+            
             ArrayList headerParams = exchange.getIn().getHeader(ResteasyConstants.RESTEASY_PROXY_METHOD_PARAMS, ArrayList.class);
 
             if(headerParams != null){
@@ -164,12 +150,11 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             } else {
                 exchange.getOut().setBody(object);
             }
+
             // preserve headers from in by copying any non existing headers
             // to avoid overriding existing headers with old values
             MessageHelper.copyHeaders(exchange.getIn(), exchange.getOut(), false);
-            // TODO change exception handling
         } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-
             exchange.getOut().getHeaders().put(ResteasyConstants.RESTEASY_PROXY_PRODUCER_EXCEPTION, ExceptionUtils.getStackTrace(e));
             exchange.getOut().setBody(e);
             LOG.error("Camel RESTEasy proxy exception", e);
@@ -182,7 +167,7 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
         int responseCode = response.getStatus();
         Map<String, Object> headers = new HashMap<>();
         headers.put(Exchange.HTTP_RESPONSE_CODE, responseCode);
-//
+
         for (String key : response.getHeaders().keySet()) {
             Object value = response.getHeaders().get(key);
             if (headerFilterStrategy != null
@@ -192,13 +177,10 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             }
         }
 
-
-
-        // set resteasy response as header so end user have access to it if needed
+        // set resteasy response as header so the end user has access to it if needed
         headers.put(ResteasyConstants.RESTEASY_RESPONSE, response);
         exchange.getOut().setHeaders(headers);
 
-        //TODO not sure if this is satisfactory, only converting the Entity to String.
         LOG.debug("Headers from exchange.getIn() : " + exchange.getIn().getHeaders().toString());
         LOG.debug("Headers from exchange.getOut() before copying : " + exchange.getOut().getHeaders().toString());
         LOG.debug("Header from response : " + response.getHeaders().toString());
@@ -208,7 +190,6 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
         } else{
             exchange.getOut().setBody(response.getStatusInfo());
         }
-
 
         // preserve headers from in by copying any non existing headers
         // to avoid overriding existing headers with old values

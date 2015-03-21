@@ -4,7 +4,10 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.Consumer;
 import org.apache.camel.Endpoint;
 import org.apache.camel.Processor;
-import org.apache.camel.component.http.*;
+import org.apache.camel.component.http.AuthMethod;
+import org.apache.camel.component.http.HttpClientConfigurer;
+import org.apache.camel.component.http.HttpComponent;
+import org.apache.camel.component.http.HttpConsumer;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.camel.spi.RestConfiguration;
 import org.apache.camel.spi.RestConsumerFactory;
@@ -18,6 +21,8 @@ import java.net.URI;
 import java.util.*;
 
 /**
+ * Defines a Resteasy component.
+ *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class ResteasyComponent extends HttpComponent implements RestConsumerFactory {
@@ -35,35 +40,9 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
         this.resteasyHttpBinding = new DefaultResteasyHttpBinding();
     }
 
-
-    public String getProxyConsumersClasses() {
-        return proxyConsumersClasses;
-    }
-
-    public void setProxyConsumersClasses(String proxyConsumersClasses) {
-        this.proxyConsumersClasses = proxyConsumersClasses;
-    }
-
-    public String getServletName() {
-        return servletName;
-    }
-
-    public void setServletName(String servletName) {
-        this.servletName = servletName;
-    }
-
-
     public ResteasyComponent(HttpServletDispatcher dispatcher){
         super(ResteasyEndpoint.class);
 
-    }
-
-    public HttpRegistry getHttpRegistry() {
-        return httpRegistry;
-    }
-
-    public void setHttpRegistry(HttpRegistry httpRegistry) {
-        this.httpRegistry = httpRegistry;
     }
 
     @Override
@@ -113,7 +92,6 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
         }
 
         // construct URI so we can use it to get the splitted information
-
         URI u = new URI(remaining);
         String protocol = u.getScheme();
 
@@ -181,9 +159,9 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
 
         return endpoint.createConsumer(processor);
     }
+
     @Override
     public void connect(HttpConsumer consumer) throws Exception {
-//        System.out.println("connect v componente");
         ResteasyConsumer sc = (ResteasyConsumer) consumer;
         String name = sc.getEndpoint().getServletName();
         HttpRegistry registry = httpRegistry;
@@ -195,7 +173,6 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
 
     @Override
     public void disconnect(HttpConsumer consumer) throws Exception {
-//        System.out.println("disconnect v componente");
         ResteasyConsumer sc = (ResteasyConsumer) consumer;
         String name = sc.getEndpoint().getServletName();
         HttpRegistry registry = httpRegistry;
@@ -203,6 +180,30 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
             registry = DefaultHttpRegistry.getHttpRegistry(name);
         }
         registry.unregister(consumer);
+    }
+
+    public String getProxyConsumersClasses() {
+        return proxyConsumersClasses;
+    }
+
+    public void setProxyConsumersClasses(String proxyConsumersClasses) {
+        this.proxyConsumersClasses = proxyConsumersClasses;
+    }
+
+    public String getServletName() {
+        return servletName;
+    }
+
+    public void setServletName(String servletName) {
+        this.servletName = servletName;
+    }
+
+    public HttpRegistry getHttpRegistry() {
+        return httpRegistry;
+    }
+
+    public void setHttpRegistry(HttpRegistry httpRegistry) {
+        this.httpRegistry = httpRegistry;
     }
 
 }

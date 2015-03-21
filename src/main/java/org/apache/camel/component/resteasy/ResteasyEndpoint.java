@@ -5,24 +5,27 @@ import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.camel.component.http.HttpEndpoint;
-import org.apache.camel.impl.DefaultHeaderFilterStrategy;
 import org.apache.camel.spi.HeaderFilterStrategy;
 import org.apache.camel.spi.HeaderFilterStrategyAware;
 import org.apache.camel.spi.UriParam;
 import org.apache.commons.httpclient.HttpConnectionManager;
 import org.apache.commons.httpclient.params.HttpClientParams;
 
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
+ * Defines the Resteasy Endpoint.
+ * It contains a list of properties for Resteasy endpoint including {@link org.apache.camel.component.resteasy.ResteasyHttpBinding},
+ * and {@link HeaderFilterStrategy}.
+ *
  * @author : Roman Jakubco (rjakubco@redhat.com)
  */
 public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrategyAware {
     @UriParam
     private  String resteasyMethod = "GET";
 
+    @UriParam
     private ResteasyHttpBinding restEasyHttpBinding;
 
     @UriParam
@@ -49,20 +52,51 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
     @UriParam
     private String password;
 
-
     private String protocol;
     private String host;
     private int port;
     private String uriPattern;
 
 //    Using default camel headerFilterStrategy -> possibility to create your own strategy and set it on endpoint
+    @UriParam
     private HeaderFilterStrategy headerFilterStrategy = new ResteasyHeaderFilterStrategy();
 
     @UriParam
     private boolean throwExceptionOnFailure = true;
     private boolean disableStreamCache;
 
+    public ResteasyEndpoint(String endPointURI, ResteasyComponent component, URI httpUri, HttpClientParams params, HttpConnectionManager httpConnectionManager,
+                            HttpClientConfigurer clientConfigurer) throws URISyntaxException {
+        super(endPointURI, component, httpUri, params, httpConnectionManager, clientConfigurer);
 
+    }
+
+    @Override
+    public Producer createProducer() throws Exception {
+        return new ResteasyProducer(this);
+    }
+
+    @Override
+    public Consumer createConsumer(Processor processor) throws Exception {
+        ResteasyConsumer answer = new ResteasyConsumer(this, processor);
+        configureConsumer(answer);
+        return answer;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return true;
+    }
+
+    @Override
+    public HeaderFilterStrategy getHeaderFilterStrategy() {
+        return headerFilterStrategy;
+    }
+
+    @Override
+    public void setHeaderFilterStrategy(HeaderFilterStrategy headerFilterStrategy) {
+        this.headerFilterStrategy = headerFilterStrategy;
+    }
 
 
     public String getProxyMethod() {
@@ -87,12 +121,6 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
 
     public void setCamelProxy(Boolean camelProxy) {
         this.camelProxy = camelProxy;
-    }
-
-    public ResteasyEndpoint(String endPointURI, ResteasyComponent component, URI httpUri, HttpClientParams params, HttpConnectionManager httpConnectionManager,
-                            HttpClientConfigurer clientConfigurer) throws URISyntaxException {
-        super(endPointURI, component, httpUri, params, httpConnectionManager, clientConfigurer);
-
     }
 
     public String getProxyClientClass() {
@@ -151,8 +179,6 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
         this.uriPattern = uriPattern;
     }
 
-
-
     public boolean isThrowExceptionOnFailure() {
         return throwExceptionOnFailure;
     }
@@ -168,7 +194,6 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
     public void setDisableStreamCache(boolean disableStreamCache) {
         this.disableStreamCache = disableStreamCache;
     }
-
 
     public Boolean getOauthSecure() {
         return OauthSecure;
@@ -202,30 +227,5 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
         this.restEasyHttpBinding = restEasyHttpBinding;
     }
 
-    @Override
-    public Producer createProducer() throws Exception {
-        return new ResteasyProducer(this);
-    }
 
-    @Override
-    public Consumer createConsumer(Processor processor) throws Exception {
-        ResteasyConsumer answer = new ResteasyConsumer(this, processor);
-        configureConsumer(answer);
-        return answer;
-    }
-
-    @Override
-    public boolean isSingleton() {
-        return true;
-    }
-
-    @Override
-    public HeaderFilterStrategy getHeaderFilterStrategy() {
-        return headerFilterStrategy;
-    }
-
-    @Override
-    public void setHeaderFilterStrategy(HeaderFilterStrategy headerFilterStrategy) {
-        this.headerFilterStrategy = headerFilterStrategy;
-    }
 }

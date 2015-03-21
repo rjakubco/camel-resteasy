@@ -22,28 +22,43 @@ import org.apache.camel.component.resteasy.servlet.ResteasyCamelServlet;
 import java.util.Set;
 
 /**
- * Keeps track of HttpConsumers and CamelServlets and 
- * connects them to each other. In OSGi there should
- * be one HttpRegistry per bundle.
- * 
- * A CamelServlet that should serve more than one
- * bundle should be registered as an OSGi service.
- * The HttpRegistryImpl can then be configured to listen
- * to service changes. See /tests/camel-itest-osgi/../servlet
- * for an example how to use this.
+ * Keeps track of HttpConsumers and ResteasyServlets and
+ * connects them to each other.
+ *
  */
 public interface HttpRegistry {
 
+    /**
+     *
+     * @param consumer
+     */
     void register(HttpConsumer consumer);
 
+    /**
+     *
+     * @param consumer
+     */
     void unregister(HttpConsumer consumer);
 
+    /**
+     *
+     * @param provider
+     */
     void register(ResteasyCamelServlet provider);
 
+    /**
+     *
+     * @param provider
+     */
     void unregister(ResteasyCamelServlet provider);
 
+    /**
+     *
+     * @param servletName
+     * @return
+     */
     ResteasyCamelServlet getCamelServlet(String servletName);
-
-    public Set<HttpConsumer> getConsumers();
+    // TODO probably useless
+//    public Set<HttpConsumer> getConsumers();
 
 }

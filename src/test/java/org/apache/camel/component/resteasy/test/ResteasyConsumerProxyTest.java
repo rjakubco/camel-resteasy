@@ -1,7 +1,8 @@
 package org.apache.camel.component.resteasy.test;
 
-import org.apache.camel.component.resteasy.test.beans.*;
-import org.apache.commons.io.IOUtils;
+import org.apache.camel.component.resteasy.test.beans.Customer;
+import org.apache.camel.component.resteasy.test.beans.ProxyBean;
+import org.apache.camel.component.resteasy.test.beans.ProxyServiceInterface;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -20,7 +21,7 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 09/03/15.
+ * @author : Roman Jakubco (rjakubco@redhat.com).
  */
 @RunWith(Arquillian.class)
 public class ResteasyConsumerProxyTest {

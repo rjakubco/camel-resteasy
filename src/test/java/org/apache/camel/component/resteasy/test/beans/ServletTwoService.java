@@ -7,7 +7,7 @@ import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 /**
- * Created by roman on 20/03/15.
+ * @author : Roman Jakubco (rjakubco@redhat.com).
  */
 @Path("/numberTwo/simpleServiceSecure")
 public class ServletTwoService{

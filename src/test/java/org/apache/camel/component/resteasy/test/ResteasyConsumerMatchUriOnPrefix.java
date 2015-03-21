@@ -14,13 +14,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.File;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 09/03/15.
+ * @author : Roman Jakubco (rjakubco@redhat.com).
  */
 @RunWith(Arquillian.class)
 public class ResteasyConsumerMatchUriOnPrefix {

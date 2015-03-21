@@ -1,7 +1,5 @@
 package org.apache.camel.component.resteasy.test;
 
-import org.apache.camel.component.resteasy.test.beans.SimpleService;
-import org.apache.camel.component.resteasy.test.beans.TestBean;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -18,7 +16,7 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 
 /**
- * Created by roman on 20/03/15.
+ * @author : Roman Jakubco (rjakubco@redhat.com).
  */
 @RunWith(Arquillian.class)
 public class ResteasyMethodRestrictTest {

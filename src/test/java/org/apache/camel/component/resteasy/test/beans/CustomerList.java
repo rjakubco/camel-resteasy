@@ -1,9 +1,11 @@
 package org.apache.camel.component.resteasy.test.beans;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 13/03/15.
+ * @author : Roman Jakubco (rjakubco@redhat.com).
  */
 public class CustomerList {
     static Set<Customer> customerList = new HashSet<>();

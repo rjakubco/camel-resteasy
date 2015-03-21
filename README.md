@@ -24,8 +24,8 @@ It is pretty straight forward just addd camel-resteasy dependecy to your project
     <to uri="resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users/1"/>
 </route>
 ``` 
-Http method use for call can be send as Exchange.HTTP_METHOD header in message or specified by uri option "resteasyMethod"
-``` 
+Http method use for call can be send as Exchange.HTTP_METHOD header in message or specified by uri option "resteasyMethod".
+```
 <route>
     <from uri="direct:start"/>
     <to uri="resteasy:http://localhost:8080/RESTfulDemoApplication/user-management/users?resteasyMethod=POST"/>
@@ -39,9 +39,10 @@ Http method use for call can be send as Exchange.HTTP_METHOD header in message o
 ### Consumer:
 Consumer is representing the server side of the RESTEasy and it is integrated with RESTEasy be extending HttpServletDispatcher class and implementing own servlet. The servlet will find all classes with RESTEasy annotations and handle all calls to them. Message sent to camel route will contain stream in its body representing returned response entity. The message will be also containing request and response as headers. Camel route specified for the consumer will be executed before the response is send back to the client.
 
-RESTEasy is only registering annotations in classes or on interfaces if they have implementing class. If you want just specified paths and methods by annotation in interface and handle creating response in camel, you can use this component with proxy option. You just need to specify proxy interfaces in component bean in property "proxyConsumersClasses", separated by comma. Then set URI option "proxy" on consumer to true The component will create dynamic proxy classes implementing these interfaces and register them with the servlet. This is done on initialization of the servlet.
+RESTEasy is only registering annotations in classes or on interfaces if they have implementing class. If you want just specified paths and methods by annotation in interface and handle creating response in camel, you can use this component with proxy option. You just need to specify proxy interfaces in component bean in property "proxyConsumersClasses", separated by comma.
+Then set URI option "proxy" on consumer to true The component will create dynamic proxy classes implementing these interfaces and register them with the servlet. This is done on initialization of the servlet.
 
-There is also posibility to just create consumers in camel route without interface or classes. For this purporse just set URI option proxy to true and you can create responses in camel. 
+There is also posibility to just create consumers in camel route without interface or classes. For this purporse just set URI option camelProxy to true and you can create responses in camel. You can also sey URI option httpMethodRestrict to restrict which http method will be allowed.
 ``` 
 <bean id="resteasy" class="org.apache.camel.component.resteasy.ResteasyComponent">
         <property name="proxyConsumersClasses" value="com.camel.rest.ServiceInterface,com.camel.rest.AnotherServiceInterface"/>
@@ -51,22 +52,18 @@ There is also posibility to just create consumers in camel route without interfa
 Uri options for consumer (can change in the future):
 * matchOnUriPrefix        -> Whether or not the CamelServlet should try to find a target consumer by matching the URI prefix, if no exact match is found. 
 * servlet-name (required) -> Specifies the servlet name that the servlet endpoint will bind to. This name should match the name you define in web.xml file. 
-* proxy (boolean) -> if set to true, then camel with register this consumer as proxy. 
+* proxy (boolean) -> if set to true, then camel with register this consumer as proxy.
+* camelProxy(boolean) -> if set to true, then this address is only specified in Camel.
+* httpMethodRestrict ->  Used to only allow consuming if the HttpMethod matches, such as GET/POST/PUT etc.
 
 
 #### Usage:
 As always add depenecy of camel-resteasy in to your project.
 
-If you want to use consumer your need to use servlet and filter implemeneted in the component.  To this you need to add this configuration in to the web.xml:
+If you want to use consumer your need to use servlet created for CamelResteasy. CamelResteasy has also its own filter
+needed for consuming messages and this filter is added to configuration by @WebFilter annotation. To this you need to
+add this configuration in to the web.xml:
 ``` 
-<filter>
-       <filter-name>Camel Response filter</filter-name>
-       <filter-class>org.apache.camel.component.resteasy.servlet.ResteasyResponseFilter</filter-class>
-</filter>
-<filter-mapping>
-       <filter-name>Camel Response filter</filter-name>
-       <servlet-name>resteasy-camel-servlet</servlet-name>
-</filter-mapping>
 
 <servlet>
 	<servlet-name>resteasy-camel-servlet</servlet-name>
@@ -104,15 +101,16 @@ After that just create the component and use it as consumer in the camel route, 
            </route>   
            
            <route>
-                <from uri="resteasy:///only/camel/address?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+                <from uri="resteasy:///only/camel/address?servletName=resteasy-camel-servlet&amp;camelProxy=true"/>
                 <setBody>
-                    <constant>Creation of consumer without class or interface was sucessful</constant>
+                    <constant>Creation of consumer without class or interface was successful</constant>
                 </setBody>
             </route>
             <route>
                 <from uri="resteasy:///address/specified/in/interface?servletName=resteasy-camel-servlet&amp;proxy=true"/>
                 <setBody>
-                    <constant>Creation of resteasy adress from interface com.camel.rest.ServiceInterface by dynamic proxy</constant>
+                    <constant>Creation of resteasy address from interface com.camel.rest.ServiceInterface by dynamic
+                    proxy</constant>
                 </setBody>
             </route>
 
