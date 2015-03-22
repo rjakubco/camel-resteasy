@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentMap;
  * Class extending HttpServletDispatcher from Resteasy and representing servlet used as Camel Consumer. This servlet
  * needs to be used in application if you want to use Camel Resteasy consumer in your camel routes.
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyCamelServlet extends HttpServletDispatcher {
     private HttpRegistry httpRegistry;
@@ -43,9 +43,11 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
 
 
     /**
+     * Init method for ResteasyCamelServlet, which registering servlets to HttpRegistry and it is also registering
+     * proxy classes to Resteasy dispatcher
      *
-     * @param servletConfig
-     * @throws ServletException
+     * @param servletConfig configuration of the servlet
+     * @throws ServletException exception thrown from the super method
      */
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -91,11 +93,14 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
     }
 
     /**
+     * Overridden service method to consume requests and create responses and propagate them to the Camel routes. If
+     * proxies options are used then only request is propagated to the Camel route and user must create some
+     * response, which will be returned to the client.
      *
-     * @param httpServletRequest
-     * @param httpServletResponse
-     * @throws ServletException
-     * @throws IOException
+     * @param httpServletRequest to be processed
+     * @param httpServletResponse to be returned
+     * @throws ServletException if there was problem in Resteasy servlet, which we are extending
+     * @throws IOException if there was problem in Resteasy servlet, which we are extending
      */
     @Override
     protected void service(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
@@ -205,10 +210,8 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
         String contextPath = consumer.getEndpoint().getPath();
         exchange.getIn().setHeader(ResteasyConstants.RESTEASY_CONTEXT_PATH, contextPath);
 
-
         // Maybe send request to camel also for some logging or something
         exchange.getIn().setHeader(ResteasyConstants.RESTEASY_HTTP_REQUEST, httpServletRequest);
-
 
         String httpPath = (String)exchange.getIn().getHeader(Exchange.HTTP_PATH);
         // here we just remove the CamelServletContextPath part from the HTTP_PATH
@@ -227,7 +230,6 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
         } catch (Exception e) {
             exchange.setException(e);
         }
-
 
         try {
             // now lets output to the response
@@ -253,15 +255,16 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
 
 
     /**
+     * Connect HttpConsumer so it can be used as consumer
      *
-     * @param consumer
+     * @param consumer to be connected
      */
     public void connect(HttpConsumer consumer) {
         consumers.put(consumer.getPath(), consumer);
     }
 
     /**
-     *
+     * Destroy ResteasyCamelServlet and delete registry created by it
      */
     public void destroy() {
         DefaultHttpRegistry.removeHttpRegistry(getServletName());
@@ -273,8 +276,9 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
     }
 
     /**
+     * Disconnect HttpConsumer
      *
-     * @param consumer
+     * @param consumer to disconnect
      */
     public void disconnect(HttpConsumer consumer) {
         LOG.info("Disconnecting consumer: {}", consumer);
@@ -282,9 +286,10 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
     }
 
     /**
+     * Get ResteasyEndpoint from HttpConsumer
      *
-     * @param consumer
-     * @return
+     * @param consumer from which we need to get the endpoint
+     * @return ResteasyEndpoint for given HttpConsumer
      */
     protected ResteasyEndpoint getServletEndpoint(HttpConsumer consumer) {
         if (!(consumer.getEndpoint() instanceof ResteasyEndpoint)) {
@@ -295,9 +300,10 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
     }
 
     /**
+     * Resolve for which HttpConsumer is given request
      *
-     * @param request
-     * @return
+     * @param request to be resolved
+     * @return HttpConsumer, which must consume given request
      */
     protected HttpConsumer resolve(HttpServletRequest request) {
         String path = request.getPathInfo();

@@ -9,23 +9,23 @@
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:///customer/getAll?servletName=resteasy-camel-servlet"/>
+            <from uri="resteasy:/customer/getAll?servletName=resteasy-camel-servlet"/>
             <to uri="file://target/test/consumerTest?fileName=all.txt"/>
         </route>
         <route>
-            <from uri="resteasy:///customer/getCustomer?servletName=resteasy-camel-servlet"/>
+            <from uri="resteasy:/customer/getCustomer?servletName=resteasy-camel-servlet"/>
             <to uri="file://target/test/consumerTest?fileName=get.txt"/>
         </route>
         <route>
-            <from uri="resteasy:///customer/deleteCustomer?servletName=resteasy-camel-servlet"/>
+            <from uri="resteasy:/customer/deleteCustomer?servletName=resteasy-camel-servlet"/>
             <to uri="file://target/test/consumerTest?fileName=delete.txt"/>
         </route>
         <route>
-            <from uri="resteasy:///customer/updateCustomer?servletName=resteasy-camel-servlet"/>
+            <from uri="resteasy:/customer/updateCustomer?servletName=resteasy-camel-servlet"/>
             <to uri="file://target/test/consumerTest?fileName=update.txt"/>
         </route>
         <route>
-            <from uri="resteasy:///customer/createCustomer?servletName=resteasy-camel-servlet"/>
+            <from uri="resteasy:/customer/createCustomer?servletName=resteasy-camel-servlet"/>
             <to uri="file://target/test/consumerTest?fileName=create.txt"/>
         </route>
 

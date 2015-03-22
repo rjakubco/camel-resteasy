@@ -8,7 +8,7 @@ import java.io.InputStream;
 /**
  * Class for copying input stream from HttpRequest
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyServletInputStreamCopier extends ServletInputStream {
     private InputStream input;

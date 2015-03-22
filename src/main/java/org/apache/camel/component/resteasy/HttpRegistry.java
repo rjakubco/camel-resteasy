@@ -25,39 +25,47 @@ import java.util.Set;
  * Keeps track of HttpConsumers and ResteasyServlets and
  * connects them to each other.
  *
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public interface HttpRegistry {
 
     /**
+     * Register HttpConsumer to the registry
      *
-     * @param consumer
+     * @param consumer to register
      */
-    void register(HttpConsumer consumer);
+    public void register(HttpConsumer consumer);
 
     /**
+     * Unregister HttpConsumer from the registry
      *
-     * @param consumer
+     * @param consumer to unregister
      */
-    void unregister(HttpConsumer consumer);
+    public void unregister(HttpConsumer consumer);
 
     /**
+     * Register ResteasyCamelServlet to the registry
      *
-     * @param provider
+     * @param provider to register
      */
-    void register(ResteasyCamelServlet provider);
+    public void register(ResteasyCamelServlet provider);
 
     /**
+     * Unregister ResteasyCamelServlet from the registry
      *
-     * @param provider
+     * @param provider to unregister
      */
-    void unregister(ResteasyCamelServlet provider);
+    public void unregister(ResteasyCamelServlet provider);
 
     /**
+     * Getter for ResteasyCamelServlet with given name used in RestCamelServlet
      *
-     * @param servletName
-     * @return
+     * @param servletName for the ResteasyCamelServlet to find
+     * @return ResteasyCamel servlet with given name
      */
-    ResteasyCamelServlet getCamelServlet(String servletName);
+    public ResteasyCamelServlet getCamelServlet(String servletName);
+
+
     // TODO probably useless
 //    public Set<HttpConsumer> getConsumers();
 

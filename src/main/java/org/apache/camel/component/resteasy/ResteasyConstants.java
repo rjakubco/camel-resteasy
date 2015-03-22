@@ -3,7 +3,7 @@ package org.apache.camel.component.resteasy;
 /**
  * Constants used in the Resteasy component
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public final class ResteasyConstants {
     public final static String RESTEASY_PROXY_METHOD = "CamelResteasyProxyMethod";

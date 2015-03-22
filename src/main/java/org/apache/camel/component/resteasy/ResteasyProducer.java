@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * client, and sends the request to a server.  Any response will
  * be bound to Camel exchange.
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyProducer extends DefaultProducer {
 

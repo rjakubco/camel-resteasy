@@ -5,7 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com) on 13/03/15.
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class SubresourceService {
     @Path("/customers/{id}")

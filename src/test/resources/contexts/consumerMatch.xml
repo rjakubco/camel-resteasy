@@ -7,7 +7,7 @@
 
     <camelContext xmlns="http://camel.apache.org/schema/spring">
         <route>
-            <from uri="resteasy:///simpleService/match/?servletName=resteasy-camel-servlet&amp;matchOnUriPrefix=true"/>
+            <from uri="resteasy:/simpleService/match/?servletName=resteasy-camel-servlet&amp;matchOnUriPrefix=true"/>
             <setBody>
                 <constant>Body set from camel route</constant>
             </setBody>

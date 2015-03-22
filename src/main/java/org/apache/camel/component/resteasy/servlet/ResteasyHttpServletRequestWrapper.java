@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
  * Custom HttpServletRequestWrapper used for creating request with cached body for better manipulation in
  * ResteasyCamelServlet (ResteasyConsumer).
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyHttpServletRequestWrapper extends HttpServletRequestWrapper {
 

@@ -5,7 +5,7 @@ import org.apache.camel.impl.DefaultHeaderFilterStrategy;
 /**
  * Default ResteasyHeaderFilterStrategy in this component.
  *
- * @author : Roman Jakubco (rjakubco@redhat.com).
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyHeaderFilterStrategy extends DefaultHeaderFilterStrategy {
 

@@ -28,7 +28,7 @@ import java.util.*;
 /**
  * The default implementation of HttpRegistry interface
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class DefaultHttpRegistry implements HttpRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultHttpRegistry.class);

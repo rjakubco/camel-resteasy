@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com).
+ * @author : Roman Jakubco | rjakubco@redhat.com.
  */
 @Path("/customer")
 public class CustomerService {

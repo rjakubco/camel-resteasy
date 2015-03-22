@@ -9,9 +9,10 @@ import org.apache.camel.component.http.HttpEndpoint;
  * service to receive requests, convert them, and forward them to Camel
  * route for processing.
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyConsumer extends HttpConsumer {
+
     public ResteasyConsumer(HttpEndpoint endpoint, Processor processor) {
         super(endpoint, processor);
     }

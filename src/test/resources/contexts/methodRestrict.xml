@@ -9,7 +9,7 @@
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:///method/restrict?servletName=resteasy-camel-servlet&amp;proxy=true&amp;camelProxy=true&amp;httpMethodRestrict=DELETE"/>
+            <from uri="resteasy:/method/restrict?servletName=resteasy-camel-servlet&amp;proxy=true&amp;camelProxy=true&amp;httpMethodRestrict=DELETE"/>
             <setBody>
                 <constant>Response from httpMethodRestrict</constant>
             </setBody>

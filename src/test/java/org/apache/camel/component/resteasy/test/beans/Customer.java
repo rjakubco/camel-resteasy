@@ -1,7 +1,7 @@
 package org.apache.camel.component.resteasy.test.beans;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com).
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class Customer {
     private String name;

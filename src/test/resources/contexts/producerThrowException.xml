@@ -9,7 +9,7 @@
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:///customer/print?servletName=resteasy-camel-servlet"/>
+            <from uri="resteasy:/customer/print?servletName=resteasy-camel-servlet"/>
             <to uri="bean:process"/>
         </route>
         <route>

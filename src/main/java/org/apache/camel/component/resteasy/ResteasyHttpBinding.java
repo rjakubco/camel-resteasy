@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * Strategy interface for implementing binding between Resteasy and Camel
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public interface ResteasyHttpBinding{
 
@@ -51,8 +51,8 @@ public interface ResteasyHttpBinding{
     /**
      * Populate Camel exchange from Resteasy response
      *
-     * @param exchange
-     * @param response
+     * @param exchange to be populated
+     * @param response message to be copied from
      */
     public void populateExchangeFromResteasyResponse(Exchange exchange, Response response);
 }

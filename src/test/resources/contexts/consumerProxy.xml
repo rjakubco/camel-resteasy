@@ -9,13 +9,13 @@
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:///camel/address?servletName=resteasy-camel-servlet&amp;proxy=true&amp;camelProxy=true"/>
+            <from uri="resteasy:/camel/address?servletName=resteasy-camel-servlet&amp;proxy=true&amp;camelProxy=true"/>
             <setBody>
                 <constant>Proxy address only from Camel</constant>
             </setBody>
         </route>
         <route>
-            <from uri="resteasy:///proxy/get?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+            <from uri="resteasy:/proxy/get?servletName=resteasy-camel-servlet&amp;proxy=true"/>
             <setHeader headerName="CamelHttpResponseCode">
                 <constant>200</constant>
             </setHeader>
@@ -24,7 +24,7 @@
             </setBody>
         </route>
         <route>
-            <from uri="resteasy:///proxy/createCustomer?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+            <from uri="resteasy:/proxy/createCustomer?servletName=resteasy-camel-servlet&amp;proxy=true"/>
             <to uri="bean:proxy"/>
             <!--<setBody>-->
                 <!--<constant>Address from ProxyInterface2</constant>-->

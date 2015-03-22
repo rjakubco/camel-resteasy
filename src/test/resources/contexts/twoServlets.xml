@@ -9,11 +9,11 @@
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:///simpleServiceSecure/getMsg?servletName=resteasy-servlet-1"/>
+            <from uri="resteasy:/simpleServiceSecure/getMsg?servletName=resteasy-servlet-1"/>
             <to uri="file://target/test/servlet1/consumerTest?fileName=all.txt"/>
         </route>
         <route>
-            <from uri="resteasy:///simpleServiceSecure/getMsg?servletName=resteasy-servlet-2"/>
+            <from uri="resteasy:/simpleServiceSecure/getMsg?servletName=resteasy-servlet-2"/>
             <to uri="file://target/test/servlet2/consumerTest?fileName=all.txt"/>
         </route>
 

@@ -89,25 +89,25 @@ After that just create the component and use it as consumer in the camel route, 
 
       <camelContext xmlns="http://camel.apache.org/schema/spring">
            <route>
-              <from uri="resteasy:///customer/print?servletName=resteasy-camel-servlet"/>
+              <from uri="resteasy:/customer/print?servletName=resteasy-camel-servlet"/>
                 <to uri="bean:process"/>
             </route>           
 
             <route>
-                <from uri="resteasy:///customer/match?servletName=resteasy-camel-servlet&amp;matchOnUriPrefix=true"/>
+                <from uri="resteasy:/customer/match?servletName=resteasy-camel-servlet&amp;matchOnUriPrefix=true"/>
                 <setBody>
                     <constant>match</constant>
                 </setBody>
            </route>   
            
            <route>
-                <from uri="resteasy:///only/camel/address?servletName=resteasy-camel-servlet&amp;camelProxy=true"/>
+                <from uri="resteasy:/only/camel/address?servletName=resteasy-camel-servlet&amp;camelProxy=true"/>
                 <setBody>
                     <constant>Creation of consumer without class or interface was successful</constant>
                 </setBody>
             </route>
             <route>
-                <from uri="resteasy:///address/specified/in/interface?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+                <from uri="resteasy:/address/specified/in/interface?servletName=resteasy-camel-servlet&amp;proxy=true"/>
                 <setBody>
                     <constant>Creation of resteasy address from interface com.camel.rest.ServiceInterface by dynamic
                     proxy</constant>

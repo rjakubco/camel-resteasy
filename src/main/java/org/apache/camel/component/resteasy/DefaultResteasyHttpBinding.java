@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * The default Resteasy binding implementation
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
 

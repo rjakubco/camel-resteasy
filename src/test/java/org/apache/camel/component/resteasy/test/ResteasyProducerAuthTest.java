@@ -17,7 +17,7 @@
 //import java.io.File;
 //
 ///**
-//* @author : Roman Jakubco (rjakubco@redhat.com) on 09/03/15.
+//* @author : Roman Jakubco | rjakubco@redhat.com on 09/03/15.
 //*/
 //@RunWith(Arquillian.class)
 //public class ResteasyProducerAuthTest extends CamelTestSupport {

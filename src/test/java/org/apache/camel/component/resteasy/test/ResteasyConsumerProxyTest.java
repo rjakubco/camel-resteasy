@@ -21,7 +21,7 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com).
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 @RunWith(Arquillian.class)
 public class ResteasyConsumerProxyTest {

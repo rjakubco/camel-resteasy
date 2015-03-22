@@ -7,7 +7,7 @@ import java.io.ByteArrayOutputStream;
 
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com).
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class TestBean implements Processor {
     @Override

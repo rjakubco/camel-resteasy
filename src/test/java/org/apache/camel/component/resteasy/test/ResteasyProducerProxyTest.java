@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com).
+ * @author : Roman Jakubco | rjakubco@redhat.com.
  */
 @RunWith(Arquillian.class)
 public class ResteasyProducerProxyTest extends CamelTestSupport {

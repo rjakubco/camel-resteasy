@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
  * It contains a list of properties for Resteasy endpoint including {@link org.apache.camel.component.resteasy.ResteasyHttpBinding},
  * and {@link HeaderFilterStrategy}.
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrategyAware {
     @UriParam
@@ -63,7 +63,7 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
 
     @UriParam
     private boolean throwExceptionOnFailure = true;
-    private boolean disableStreamCache;
+
 
     public ResteasyEndpoint(String endPointURI, ResteasyComponent component, URI httpUri, HttpClientParams params, HttpConnectionManager httpConnectionManager,
                             HttpClientConfigurer clientConfigurer) throws URISyntaxException {
@@ -185,14 +185,6 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
 
     public void setThrowExceptionOnFailure(boolean throwExceptionOnFailure) {
         this.throwExceptionOnFailure = throwExceptionOnFailure;
-    }
-
-    public boolean isDisableStreamCache() {
-        return disableStreamCache;
-    }
-
-    public void setDisableStreamCache(boolean disableStreamCache) {
-        this.disableStreamCache = disableStreamCache;
     }
 
     public Boolean getOauthSecure() {

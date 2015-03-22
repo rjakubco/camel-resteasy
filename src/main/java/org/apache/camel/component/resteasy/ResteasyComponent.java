@@ -21,9 +21,9 @@ import java.net.URI;
 import java.util.*;
 
 /**
- * Defines a Resteasy component.
+ * Defines a Resteasy component, which is extending HttpComponent
  *
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyComponent extends HttpComponent implements RestConsumerFactory {
 
@@ -117,7 +117,7 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
 
     @Override
     public Consumer createConsumer(CamelContext camelContext, Processor processor, String verb, String basePath, String uriTemplate, String consumes, String produces, Map<String, Object> parameters) throws Exception {
-        // from servlet
+
         String path = basePath;
         if (uriTemplate != null) {
             // make sure to avoid double slashes
@@ -143,7 +143,7 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
 
         String query = URISupport.createQueryString(map);
 
-        String url = "resteasy:///%s";
+        String url = "resteasy:/%s";
         if (!query.isEmpty()) {
             url = url + "?" + query;
         }

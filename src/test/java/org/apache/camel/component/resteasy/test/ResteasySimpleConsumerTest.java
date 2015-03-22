@@ -19,7 +19,7 @@ import java.io.File;
 import java.nio.file.Files;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com).
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 @RunWith(Arquillian.class)
 public class ResteasySimpleConsumerTest {
