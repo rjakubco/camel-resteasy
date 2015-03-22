@@ -145,15 +145,16 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
             if(object instanceof Response){
                 // using proxy client with return type response, creates some problem with readEntity and response needs to be
                 // closed manually for correct return type to user.
-                exchange.getOut().setBody(((Response)object).readEntity(String.class));
+                populateExchangeFromResteasyResponse(exchange, (Response) object);
                 ((Response) object).close();
             } else {
                 exchange.getOut().setBody(object);
+                // preserve headers from in by copying any non existing headers
+                // to avoid overriding existing headers with old values
+                MessageHelper.copyHeaders(exchange.getIn(), exchange.getOut(), false);
             }
 
-            // preserve headers from in by copying any non existing headers
-            // to avoid overriding existing headers with old values
-            MessageHelper.copyHeaders(exchange.getIn(), exchange.getOut(), false);
+
         } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             exchange.getOut().getHeaders().put(ResteasyConstants.RESTEASY_PROXY_PRODUCER_EXCEPTION, ExceptionUtils.getStackTrace(e));
             exchange.getOut().setBody(e);
