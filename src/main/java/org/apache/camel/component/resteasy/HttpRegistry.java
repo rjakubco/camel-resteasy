@@ -19,8 +19,6 @@ package org.apache.camel.component.resteasy;
 import org.apache.camel.component.http.HttpConsumer;
 import org.apache.camel.component.resteasy.servlet.ResteasyCamelServlet;
 
-import java.util.Set;
-
 /**
  * Keeps track of HttpConsumers and ResteasyServlets and
  * connects them to each other.

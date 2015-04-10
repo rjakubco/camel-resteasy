@@ -22,6 +22,4 @@ public class ResteasyConsumer extends HttpConsumer {
         return (ResteasyEndpoint) super.getEndpoint();
     }
 
-
-
 }

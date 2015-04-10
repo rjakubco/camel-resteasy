@@ -9,8 +9,6 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * ResteasyProducer binds a Camel exchange to a Http Request, acts as a Resteasy

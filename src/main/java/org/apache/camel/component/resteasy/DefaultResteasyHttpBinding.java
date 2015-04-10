@@ -138,8 +138,8 @@ public class DefaultResteasyHttpBinding implements ResteasyHttpBinding {
                 Method m = simple.getClass().getMethod(parameters.get("proxyMethodName"), paramsClasses);
                 object = m.invoke(simple, args);
             } else{
-                Method m = simple.getClass().getMethod(parameters.get("proxyMethodName"), new Class[] {});
-                object = m.invoke(simple, new Object[] {});
+                Method m = simple.getClass().getMethod(parameters.get("proxyMethodName"));
+                object = m.invoke(simple);
             }
 
             if(object instanceof Response){

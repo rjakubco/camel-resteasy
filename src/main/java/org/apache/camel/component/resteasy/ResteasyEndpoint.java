@@ -44,9 +44,6 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
     private Boolean camelProxy = false;
 
     @UriParam
-    private Boolean OauthSecure;
-
-    @UriParam
     private String username;
 
     @UriParam
@@ -185,14 +182,6 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
 
     public void setThrowExceptionOnFailure(boolean throwExceptionOnFailure) {
         this.throwExceptionOnFailure = throwExceptionOnFailure;
-    }
-
-    public Boolean getOauthSecure() {
-        return OauthSecure;
-    }
-
-    public void setOauthSecure(Boolean oauthSecure) {
-        OauthSecure = oauthSecure;
     }
 
     public String getUsername() {

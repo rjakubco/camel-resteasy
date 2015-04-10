@@ -29,9 +29,10 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
 
     private HttpRegistry httpRegistry;
 
+    // parameter that can be set in ResteasyComponent
     private String proxyConsumersClasses;
 
-    private String servletName;
+//    private String servletName;
 
     private ResteasyHttpBinding resteasyHttpBinding;
 
@@ -57,16 +58,16 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
         Boolean throwExceptionOnFailure = getAndRemoveParameter(parameters, "throwExceptionOnFailure", Boolean.class);
         Boolean transferException = getAndRemoveParameter(parameters, "transferException", Boolean.class);
         Boolean matchOnUriPrefix = getAndRemoveParameter(parameters, "matchOnUriPrefix", Boolean.class);
-        String servletName = getAndRemoveParameter(parameters, "servletName", String.class, getServletName());
+//        String servletName = getAndRemoveParameter(parameters, "servletName", String.class, getServletName());
         String httpMethodRestrict = getAndRemoveParameter(parameters, "httpMethodRestrict", String.class);
         HeaderFilterStrategy headerFilterStrategy = resolveAndRemoveReferenceParameter(parameters, "headerFilterStrategy", HeaderFilterStrategy.class);
 
-        // restructure uri to be based on the parameters left as we dont want to include the Camel internal options
+        // restructure uri to be based on the parameters left as we don't want to include the Camel internal options
         URI httpUri = URISupport.createRemainingURI(new URI(UnsafeUriCharactersEncoder.encodeHttpURI(uri)), parameters);
 
         ResteasyEndpoint endpoint =  new ResteasyEndpoint(uri, this, httpUri, params, getHttpConnectionManager(), configurer);
 
-        endpoint.setServletName(servletName);
+//        endpoint.setServletName(servletName);
         // Needed for taking component options from URI and using only clean uri for resource. Later adding query parameters
         setProperties(endpoint, parameters);
 
@@ -132,6 +133,7 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
         // if no explicit port/host configured, then use port from rest configuration
         RestConfiguration config = getCamelContext().getRestConfiguration();
 
+        // TODO check possibility with rest dsl -> in this section some additional code will be
         Map<String, Object> map = new HashMap<String, Object>();
         // build query string, and append any endpoint configuration properties
         if (config.getComponent() == null || config.getComponent().equals("resteasy")) {
@@ -190,13 +192,13 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
         this.proxyConsumersClasses = proxyConsumersClasses;
     }
 
-    public String getServletName() {
-        return servletName;
-    }
-
-    public void setServletName(String servletName) {
-        this.servletName = servletName;
-    }
+//    public String getServletName() {
+//        return servletName;
+//    }
+//
+//    public void setServletName(String servletName) {
+//        this.servletName = servletName;
+//    }
 
     public HttpRegistry getHttpRegistry() {
         return httpRegistry;

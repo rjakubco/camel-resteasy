@@ -4,8 +4,6 @@ import org.apache.camel.Exchange;
 import org.apache.camel.ExchangePattern;
 import org.apache.camel.component.http.HttpConsumer;
 import org.apache.camel.component.http.HttpMessage;
-import org.apache.camel.component.http.HttpServletResolveConsumerStrategy;
-import org.apache.camel.component.http.ServletResolveConsumerStrategy;
 import org.apache.camel.component.http.helper.HttpHelper;
 import org.apache.camel.component.resteasy.*;
 import org.apache.camel.impl.DefaultExchange;
@@ -175,7 +173,7 @@ public class ResteasyCamelServlet extends HttpServletDispatcher {
 
         String response = "";
 
-        if(getServletEndpoint(consumer).getProxy()){
+        if(getServletEndpoint(consumer).getProxy() || getServletEndpoint(consumer).getCamelProxy()){
             // Servlet is returning status code 204 if request was correct but there is no content -> if 204 continue to camel route
             if(httpServletResponse.getStatus() != 200 && httpServletResponse.getStatus() != 204){
                 // If request wasn't successful in resteasy then stop processing and return created response from resteasy

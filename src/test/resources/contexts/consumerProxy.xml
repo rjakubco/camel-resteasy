@@ -9,7 +9,10 @@
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:/camel/address?servletName=resteasy-camel-servlet&amp;proxy=true&amp;camelProxy=true"/>
+            <from uri="resteasy:/camel/address?servletName=resteasy-camel-servlet&amp;camelProxy=true"/>
+            <setHeader headerName="CamelHttpResponseCode">
+                <constant>200</constant>
+            </setHeader>
             <setBody>
                 <constant>Proxy address only from Camel</constant>
             </setBody>
