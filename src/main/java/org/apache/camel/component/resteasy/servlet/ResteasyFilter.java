@@ -9,7 +9,9 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * Customer Filter used for wrapping requests and responses to created custom wrappers.
+ *
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 @Provider
 @WebFilter("/*")

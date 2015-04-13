@@ -3,24 +3,24 @@ package org.apache.camel.component.resteasy;
 import org.apache.camel.CamelExchangeException;
 import org.apache.camel.Exchange;
 import org.apache.camel.impl.DefaultProducer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.core.*;
-
+import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * ResteasyProducer binds a Camel exchange to a Http Request, acts as a Resteasy
+ * client, and sends the request to a server.  Any response will
+ * be bound to Camel exchange.
+ *
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyProducer extends DefaultProducer {
+
     private static final Logger LOG = LoggerFactory.getLogger(ResteasyProducer.class);
     ResteasyEndpoint endpoint;
-    private static final Pattern PATTERN = Pattern.compile("\\(([\\w\\.]*)\\)");
 
 
     public ResteasyProducer(ResteasyEndpoint endpoint) {
@@ -61,33 +61,20 @@ public class ResteasyProducer extends DefaultProducer {
     }
 
 
+    /**
+     * Building the final URI from endpoint, which will be used in the Camel-Resteasy producer for Resteasy client.
+     *
+     * @param endpoint Resteasy endpoint
+     * @param exchange camel exchange sent to the endpoint
+     * @return URI representing the final URI with query which will be used in Resteasy client
+     * @throws CamelExchangeException
+     */
     private static String buildUri(ResteasyEndpoint endpoint, Exchange exchange) throws CamelExchangeException {
         String uri;
         if(endpoint.getPort() == 0){
             uri = endpoint.getProtocol() + "://" + endpoint.getHost()  + endpoint.getUriPattern();
         } else{
             uri = endpoint.getProtocol() + "://" + endpoint.getHost() + ":" + endpoint.getPort() + endpoint.getUriPattern();
-        }
-
-
-        // substitute { } placeholders in uri and use mandatory headers
-        LOG.trace("Substituting '(value)' placeholders in uri: {}", uri);
-        Matcher matcher = PATTERN.matcher(uri);
-        while (matcher.find()) {
-            String key = matcher.group(1);
-            String header = exchange.getIn().getHeader(key, String.class);
-            // header should be mandatory
-            if (header == null) {
-                throw new CamelExchangeException("Header with key: " + key + " not found in Exchange", exchange);
-            }
-
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("Replacing: {} with header value: {}", matcher.group(0), header);
-            }
-
-            uri = matcher.replaceFirst(header);
-            // we replaced uri so reset and go again
-            matcher.reset(uri);
         }
 
         String query = exchange.getIn().getHeader(Exchange.HTTP_QUERY, String.class);
@@ -100,6 +87,13 @@ public class ResteasyProducer extends DefaultProducer {
         return uri;
     }
 
+    /**
+     * Method for adding query to URI and creating final URI for producer
+     *
+     * @param uri base URI
+     * @param query string representing query read from HTTP_QUERY header
+     * @return URI with added query
+     */
     protected static String addQueryToUri(String uri, String query) {
         if (uri == null || uri.length() == 0) {
             return uri;
@@ -126,6 +120,14 @@ public class ResteasyProducer extends DefaultProducer {
 
     }
 
+    /**
+     * Method for getting specific Camel-Resteasy options from endpoint and headers in exchange and returning the
+     * correct values as Map.
+     *
+     * @param exchange camel exchange
+     * @param endpoint endpoint on which the exchange came
+     * @return map with correct values for each option relevant for Camel-Resteasy
+     */
     protected static Map<String, String> getParameters(Exchange exchange, ResteasyEndpoint endpoint){
         Map<String, String> parameters = new HashMap<String, String>();
 

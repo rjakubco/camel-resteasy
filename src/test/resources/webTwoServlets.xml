@@ -2,7 +2,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 
-
     <display-name>Restful Web Application</display-name>
 
     <context-param>
@@ -14,22 +13,31 @@
             org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
     </listener>
 
-      <listener>
+    <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
+    <servlet>
+        <servlet-name>resteasy-servlet-2</servlet-name>
+        <servlet-class>
+            org.apache.camel.component.resteasy.servlet.ResteasyCamelServlet</servlet-class>
+    </servlet>
 
     <servlet>
-        <servlet-name>resteasy-camel-servlet</servlet-name>
+        <servlet-name>resteasy-servlet-1</servlet-name>
         <servlet-class>
             org.apache.camel.component.resteasy.servlet.ResteasyCamelServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>resteasy-camel-servlet</servlet-name>
-        <url-pattern>/*</url-pattern>
+        <servlet-name>resteasy-servlet-1</servlet-name>
+        <url-pattern>/numberOne/*</url-pattern>
     </servlet-mapping>
 
+    <servlet-mapping>
+        <servlet-name>resteasy-servlet-2</servlet-name>
+        <url-pattern>/numberTwo/*</url-pattern>
+    </servlet-mapping>
 
 
 

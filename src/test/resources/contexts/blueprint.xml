@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+       http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+       http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+
+
+    <camelContext id="complex-context" xmlns="http://camel.apache.org/schema/blueprint" autoStartup="true">
+        <route>
+            <from uri="resteasy:/simpleService/getMsg2?servletName=resteasy-camel-servlet"/>
+            <setBody>
+                <constant>Message from blueprint</constant>
+            </setBody>
+        </route>
+    </camelContext>
+    <bean id="resteasy" class="org.apache.camel.component.resteasy.ResteasyComponent">
+    </bean>
+
+</blueprint>

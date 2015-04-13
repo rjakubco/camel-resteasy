@@ -50,36 +50,6 @@
             <version>2.14.0</version>
         </dependency>
 
-
-        <!-- test dependencies -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-test-spring</artifactId>
-            <version>2.14.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jetty</artifactId>
-            <version>2.14.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- for testing rest-dsl -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jackson</artifactId>
-            <version>2.14.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jaxb</artifactId>
-            <version>2.14.0</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -87,39 +57,26 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>4.0.5.RELEASE</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
-            <version>3.0.9.Final</version>
+            <version>3.0.10.Final</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-spring</artifactId>
-            <version>3.0.9.Final</version>
+            <version>3.0.10.Final</version>
         </dependency>
 
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>jaxrs-api</artifactId>
-            <version>3.0.9.Final</version>
+            <version>3.0.10.Final</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>3.0.9.Final</version>
+            <version>3.0.10.Final</version>
         </dependency>
 
         <dependency>
@@ -133,11 +90,6 @@
             <artifactId>reflections</artifactId>
             <version>0.9.9-RC1</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.httpcomponents</groupId>-->
-            <!--<artifactId>httpclient</artifactId>-->
-            <!--<version>4.3.6</version>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -151,24 +103,32 @@
             <version>2.4</version>
         </dependency>
 
-<!--testing-->
-        <!--<dependency>-->
-            <!--<groupId>org.wildfly</groupId>-->
-            <!--<artifactId>wildfly-arquillian-container-embedded</artifactId>-->
-            <!--<version>8.1.0.Final</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.wildfly</groupId>-->
-            <!--<artifactId>wildfly-embedded</artifactId>-->
-            <!--<version>8.1.0.Final</version>-->
-        <!--</dependency>-->
+
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jackson</artifactId>
+            <version>2.14.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jaxb</artifactId>
+            <version>2.14.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.jboss.arquillian.junit</groupId>
             <artifactId>arquillian-junit-core</artifactId>
             <version>1.1.7.Final</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jboss.arquillian.protocol</groupId>
             <artifactId>arquillian-protocol-servlet</artifactId>
@@ -193,15 +153,24 @@
             <version>1.2.2</version>
             <scope>test</scope>
         </dependency>
-
-
-
         <dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-depchain</artifactId>
             <version>2.1.1</version> <!-- Or whatever version you need -->
             <scope>test</scope>
             <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-blueprint</artifactId>
+            <version>2.14.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint.web</artifactId>
+            <version>1.1.0</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

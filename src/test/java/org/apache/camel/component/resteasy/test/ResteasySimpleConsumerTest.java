@@ -2,7 +2,6 @@ package org.apache.camel.component.resteasy.test;
 
 import org.apache.camel.component.resteasy.test.beans.SimpleService;
 import org.apache.camel.component.resteasy.test.beans.TestBean;
-import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.resteasy.client.jaxrs.ResteasyClient;
@@ -18,10 +17,9 @@ import org.junit.runner.RunWith;
 import javax.ws.rs.core.Response;
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 13/03/15.
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 @RunWith(Arquillian.class)
 public class ResteasySimpleConsumerTest {

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Roman Jakubco (rjakubco@redhat.com) on 13/03/15.
+ * @author : Roman Jakubco | rjakubco@redhat.com.
  */
 @Path("/customer")
 public class CustomerService {
@@ -32,7 +32,7 @@ public class CustomerService {
     @GET
     @Produces("application/json")
     @Path("/getCustomer")
-    public Response getCustomer(@QueryParam("id") int id) throws Exception {
+    public Response getCustomer(@QueryParam("id") Integer id) throws Exception {
         Customer c = list.getCustomer(id);
         if(c != null){
             return Response.status(200).entity(c).build();
@@ -44,7 +44,7 @@ public class CustomerService {
 
     @DELETE
     @Path("/deleteCustomer")
-    public Response deleteCustomer(@QueryParam("id") int id) throws IOException, ServletException {
+    public Response deleteCustomer(@QueryParam("id") Integer id) throws IOException, ServletException {
         Customer c = list.deleteCustomer(id);
         return Response.status(200).entity("Customer deleted : " + c ).build();
     }
@@ -76,11 +76,11 @@ public class CustomerService {
     /*
         Specific methods for servlets used in proxy producer test
      */
-    // Really forced method for testing proxy producera with more parameters
+    // Really forced methods for testing proxy producer with more parameters
     @GET
     @Produces("application/json")
     @Path("/getSpecificThreeCustomers")
-    public Response getSpecificThreeCustomers(@QueryParam("c1") int customerId1, @QueryParam("c2") int customerId2, @QueryParam("c1") int customerId3) throws Exception {
+    public Response getSpecificThreeCustomers(@QueryParam("c1") Integer customerId1, @QueryParam("c2") Integer customerId2, @QueryParam("c3") Integer customerId3) throws Exception {
         List<Customer> customers = new ArrayList<>();
         customers.add(list.getCustomer(customerId1));
         customers.add(list.getCustomer(customerId2));
@@ -89,10 +89,25 @@ public class CustomerService {
         return Response.status(200).entity(customers).build();
     }
 
+    @POST
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Path("/checkCustomer")
+    public Response checkIfCustomerExists(@QueryParam("c1") Integer customerId1, Customer customer) throws Exception {
+        Customer foundCustomer = list.getCustomer(customerId1);
+        if(foundCustomer.equals(customer)){
+            return Response.status(200).entity("Customers are equal").build();
+        } else{
+            return Response.status(200).entity("Customers are not equal").build();
+        }
+
+
+    }
+
     @GET
     @Produces("application/json")
     @Path("/getCustomerWithoutResponse")
-    public Customer getCustomerWithoutResponse(@QueryParam("c1") int customerId1) throws Exception {
+    public Customer getCustomerWithoutResponse(@QueryParam("c1") Integer customerId1) throws Exception {
         Customer c = list.getCustomer(customerId1);
         return c;
     }

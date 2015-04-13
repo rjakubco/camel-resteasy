@@ -1,7 +1,9 @@
 package org.apache.camel.component.resteasy;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * Constants used in the Resteasy component
+ *
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public final class ResteasyConstants {
     public final static String RESTEASY_PROXY_METHOD = "CamelResteasyProxyMethod";
@@ -12,6 +14,5 @@ public final class ResteasyConstants {
     public final static String RESTEASY_RESPONSE =  "CamelResteasyResponse";
     public final static String RESTEASY_HTTP_METHOD = "CamelResteasyHttpMethod";
     public final static String RESTEASY_HTTP_REQUEST = "CamelResteasyHttpRequest";
-//    public final static String  = "";
-
+    public final static String RESTEASY_PROXY_PRODUCER_EXCEPTION = "CamelResteasyProxyProducerException";
 }

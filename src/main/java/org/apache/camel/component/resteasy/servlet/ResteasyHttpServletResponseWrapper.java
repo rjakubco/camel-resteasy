@@ -9,7 +9,10 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * Custom HttpServletResponseWrapper used for creating response with cached body for better manipulation in
+ * ResteasyCamelServlet (ResteasyConsumer).
+ *
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyHttpServletResponseWrapper extends HttpServletResponseWrapper {
 

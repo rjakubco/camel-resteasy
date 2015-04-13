@@ -19,31 +19,52 @@ package org.apache.camel.component.resteasy;
 import org.apache.camel.component.http.HttpConsumer;
 import org.apache.camel.component.resteasy.servlet.ResteasyCamelServlet;
 
-import java.util.Set;
-
 /**
- * Keeps track of HttpConsumers and CamelServlets and 
- * connects them to each other. In OSGi there should
- * be one HttpRegistry per bundle.
- * 
- * A CamelServlet that should serve more than one
- * bundle should be registered as an OSGi service.
- * The HttpRegistryImpl can then be configured to listen
- * to service changes. See /tests/camel-itest-osgi/../servlet
- * for an example how to use this.
+ * Keeps track of HttpConsumers and ResteasyServlets and
+ * connects them to each other.
+ *
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public interface HttpRegistry {
 
-    void register(HttpConsumer consumer);
+    /**
+     * Register HttpConsumer to the registry
+     *
+     * @param consumer to register
+     */
+    public void register(HttpConsumer consumer);
 
-    void unregister(HttpConsumer consumer);
+    /**
+     * Unregister HttpConsumer from the registry
+     *
+     * @param consumer to unregister
+     */
+    public void unregister(HttpConsumer consumer);
 
-    void register(ResteasyCamelServlet provider);
+    /**
+     * Register ResteasyCamelServlet to the registry
+     *
+     * @param provider to register
+     */
+    public void register(ResteasyCamelServlet provider);
 
-    void unregister(ResteasyCamelServlet provider);
+    /**
+     * Unregister ResteasyCamelServlet from the registry
+     *
+     * @param provider to unregister
+     */
+    public void unregister(ResteasyCamelServlet provider);
 
-    ResteasyCamelServlet getCamelServlet(String servletName);
+    /**
+     * Getter for ResteasyCamelServlet with given name used in RestCamelServlet
+     *
+     * @param servletName for the ResteasyCamelServlet to find
+     * @return ResteasyCamel servlet with given name
+     */
+    public ResteasyCamelServlet getCamelServlet(String servletName);
 
-    public Set<HttpConsumer> getConsumers();
+
+    // TODO probably useless
+//    public Set<HttpConsumer> getConsumers();
 
 }

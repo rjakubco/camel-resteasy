@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="
-	  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-      http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
-      http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+
+      http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
     <camelContext xmlns="http://camel.apache.org/schema/spring">
 
         <!--cisty impl-->
         <route>
-            <from uri="resteasy:///camel/address?servletName=resteasy-camel-servlet&amp;proxy=true&amp;camelProxy=true"/>
+            <from uri="resteasy:/camel/address?servletName=resteasy-camel-servlet&amp;camelProxy=true"/>
+            <setHeader headerName="CamelHttpResponseCode">
+                <constant>200</constant>
+            </setHeader>
             <setBody>
                 <constant>Proxy address only from Camel</constant>
             </setBody>
         </route>
         <route>
-            <from uri="resteasy:///proxy/get?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+            <from uri="resteasy:/proxy/get?servletName=resteasy-camel-servlet&amp;proxy=true"/>
             <setHeader headerName="CamelHttpResponseCode">
                 <constant>200</constant>
             </setHeader>
@@ -27,7 +27,7 @@
             </setBody>
         </route>
         <route>
-            <from uri="resteasy:///proxy/createCustomer?servletName=resteasy-camel-servlet&amp;proxy=true"/>
+            <from uri="resteasy:/proxy/createCustomer?servletName=resteasy-camel-servlet&amp;proxy=true"/>
             <to uri="bean:proxy"/>
             <!--<setBody>-->
                 <!--<constant>Address from ProxyInterface2</constant>-->

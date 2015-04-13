@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * @author : Roman Jakubco (rjakubco@redhat.com)
+ * Class for copying output stream from HttpResponse
+ *
+ * @author : Roman Jakubco | rjakubco@redhat.com
  */
 public class ResteasyServletOutputStreamCopier extends ServletOutputStream {
 
