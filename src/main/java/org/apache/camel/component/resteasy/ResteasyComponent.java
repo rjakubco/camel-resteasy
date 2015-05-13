@@ -32,8 +32,6 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
     // parameter that can be set in ResteasyComponent
     private String proxyConsumersClasses;
 
-//    private String servletName;
-
     private ResteasyHttpBinding resteasyHttpBinding;
 
     public ResteasyComponent(){
@@ -67,12 +65,11 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
 
         ResteasyEndpoint endpoint =  new ResteasyEndpoint(uri, this, httpUri, params, getHttpConnectionManager(), configurer);
 
-//        endpoint.setServletName(servletName);
         // Needed for taking component options from URI and using only clean uri for resource. Later adding query parameters
         setProperties(endpoint, parameters);
 
-        if (endpoint.getRestEasyHttpBinding() == null) {
-            endpoint.setRestEasyHttpBinding(resteasyHttpBinding);
+        if (endpoint.getRestEasyHttpBindingRef() == null) {
+            endpoint.setRestEasyHttpBindingRef(resteasyHttpBinding);
         }
 
         if (matchOnUriPrefix != null) {
@@ -133,7 +130,8 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
         // if no explicit port/host configured, then use port from rest configuration
         RestConfiguration config = getCamelContext().getRestConfiguration();
 
-        // TODO check possibility with rest dsl -> in this section some additional code will be
+
+
         Map<String, Object> map = new HashMap<String, Object>();
         // build query string, and append any endpoint configuration properties
         if (config.getComponent() == null || config.getComponent().equals("resteasy")) {
@@ -159,7 +157,13 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
         ResteasyEndpoint endpoint = camelContext.getEndpoint(url,ResteasyEndpoint.class);
         setProperties(endpoint, parameters);
 
-        return endpoint.createConsumer(processor);
+        Consumer consumer = endpoint.createConsumer(processor);
+        if (config != null && config.getConsumerProperties() != null && !config.getConsumerProperties().isEmpty()) {
+            setProperties(consumer, config.getConsumerProperties());
+        }
+
+
+        return consumer;
     }
 
     @Override
@@ -191,14 +195,6 @@ public class ResteasyComponent extends HttpComponent implements RestConsumerFact
     public void setProxyConsumersClasses(String proxyConsumersClasses) {
         this.proxyConsumersClasses = proxyConsumersClasses;
     }
-
-//    public String getServletName() {
-//        return servletName;
-//    }
-//
-//    public void setServletName(String servletName) {
-//        this.servletName = servletName;
-//    }
 
     public HttpRegistry getHttpRegistry() {
         return httpRegistry;

@@ -15,7 +15,7 @@
         <route>
             <from uri="resteasy:///customer/print?servletName=resteasy-camel-servlet"/>
             <setBody>
-                <constant>len adresa z camelu</constant>
+                <constant>Only message from Camel</constant>
             </setBody>
         </route>
     </camelContext>

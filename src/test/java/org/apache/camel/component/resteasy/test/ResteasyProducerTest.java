@@ -42,7 +42,7 @@ public class ResteasyProducerTest  extends CamelTestSupport{
 
         return ShrinkWrap.create(WebArchive.class, "test.war")
 //                .addAsResource(new File("src/test/resources/contexts/basicProducer.xml"), "applicationContext.xml")
-                .addAsWebInfResource(new File("src/test/resources/web2.xml"), "web.xml")
+                .addAsWebInfResource(new File("src/test/resources/webWithoutAppContext.xml"), "web.xml")
                 .addClasses(Customer.class, TestBean.class, CustomerService.class, CustomerList.class)
                 .addPackage("org.apache.camel.component.resteasy")
                 .addPackage("org.apache.camel.component.resteasy.servlet")
@@ -94,10 +94,11 @@ public class ResteasyProducerTest  extends CamelTestSupport{
 
     @Test
     public void testGet() throws Exception {
-        String expectedBody = "[{\"name\":\"Roman\",\"surname\":\"Jakubco\",\"id\":1},{\"name\":\"Camel\",\"surname\":\"Rider\",\"id\":2}]";
+        String expectedUser1 = "{\"name\":\"Roman\",\"surname\":\"Jakubco\",\"id\":1}";
+        String expectedUser2 = "{\"name\":\"Camel\",\"surname\":\"Rider\",\"id\":2}";
         String response = template.requestBody("direct:getAll", null, String.class);
-        Assert.assertEquals(expectedBody, response);
-
+        Assert.assertTrue(response.contains(expectedUser1));
+        Assert.assertTrue(response.contains(expectedUser2));
     }
 
     @Test
@@ -106,8 +107,6 @@ public class ResteasyProducerTest  extends CamelTestSupport{
 
         String response = template.requestBodyAndHeader("direct:get", null, Exchange.HTTP_QUERY, "id=2", String.class);
         Assert.assertEquals(expectedBody, response);
-
-
     }
 
 
@@ -189,43 +188,6 @@ public class ResteasyProducerTest  extends CamelTestSupport{
     }
 
 
-    // TODO
-
-    @Test
-    public void testHead() throws Exception {
-        Exchange exchange =  template.request("direct:getAll", new Processor() {
-            @Override
-            public void process(Exchange exchange) throws Exception {
-                exchange.getOut().setHeader(ResteasyConstants.RESTEASY_HTTP_METHOD, "HEAD");
-            }
-        });
-
-        Map<String, Object> headers =  exchange.getOut().getHeaders();
-        ArrayList contentType = (ArrayList) headers.get("Content-Type");
-        ArrayList server = (ArrayList) headers.get("Server");
-        ArrayList contentLength = (ArrayList) headers.get("Content-Length");
-        Integer responseCode = (Integer) headers.get("CamelHttpResponseCode");
-
-        Assert.assertEquals("application/json", contentType.get(0));
-        Assert.assertEquals("WildFly/8", server.get(0));
-        Assert.assertEquals("87", contentLength.get(0));
-        Assert.assertEquals(new Integer(200), responseCode);
-
-
-    }
-    // TODO
-    @Test
-    public void testTrace() throws Exception {
-
-
-    }
-    // TODO
-    @Test
-    public void testOption() throws Exception {
-
-
-    }
-
     @Test
     public void testMethodInHeader() throws Exception {
         Integer customerId = 7;
@@ -260,6 +222,28 @@ public class ResteasyProducerTest  extends CamelTestSupport{
     @Test(expected = CamelExecutionException.class)
     public void testSettingNotExistingHttpMethod() throws Exception {
         template.requestBodyAndHeader("direct:getAll", null, ResteasyConstants.RESTEASY_HTTP_METHOD, "GAT");
+    }
+
+
+    @Test
+    public void testHead() throws Exception {
+        Exchange exchange =  template.request("direct:getAll", new Processor() {
+            @Override
+            public void process(Exchange exchange) throws Exception {
+                exchange.getOut().setHeader(ResteasyConstants.RESTEASY_HTTP_METHOD, "HEAD");
+            }
+        });
+
+        Map<String, Object> headers =  exchange.getOut().getHeaders();
+        ArrayList contentType = (ArrayList) headers.get("Content-Type");
+        ArrayList server = (ArrayList) headers.get("Server");
+        ArrayList contentLength = (ArrayList) headers.get("Content-Length");
+        Integer responseCode = (Integer) headers.get("CamelHttpResponseCode");
+
+        Assert.assertEquals("application/json", contentType.get(0));
+        Assert.assertEquals("WildFly/8", server.get(0));
+        Assert.assertEquals("87", contentLength.get(0));
+        Assert.assertEquals(new Integer(200), responseCode);
     }
 
 

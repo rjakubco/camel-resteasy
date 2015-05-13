@@ -38,7 +38,7 @@ public class ResteasyProducerProxyTest extends CamelTestSupport {
     public static WebArchive createDeployment() {
 
         return ShrinkWrap.create(WebArchive.class, "test.war")
-                .addAsWebInfResource(new File("src/test/resources/web2.xml"), "web.xml")
+                .addAsWebInfResource(new File("src/test/resources/webWithoutAppContext.xml"), "web.xml")
                 .addClasses(CustomerService.class, Customer.class, CustomerList.class, ProxyProducerInterface.class)
                 .addPackage("org.apache.camel.component.resteasy")
                 .addPackage("org.apache.camel.component.resteasy.servlet")
@@ -109,10 +109,12 @@ public class ResteasyProducerProxyTest extends CamelTestSupport {
     @Test
     @InSequence(1)
     public void testProxyGetAll() throws Exception {
-        String expectedBody = "[{\"name\":\"Roman\",\"surname\":\"Jakubco\",\"id\":1},{\"name\":\"Camel\",\"surname\":\"Rider\",\"id\":2}]";
-        String response = template.requestBody("direct:getAll", null, String.class);
-        Assert.assertEquals(expectedBody, response);
+        String expectedUser1 = "{\"name\":\"Roman\",\"surname\":\"Jakubco\",\"id\":1}";
+        String expectedUser2 = "{\"name\":\"Camel\",\"surname\":\"Rider\",\"id\":2}";
 
+        String response = template.requestBody("direct:getAll", null, String.class);
+        Assert.assertTrue(response.contains(expectedUser1));
+        Assert.assertTrue(response.contains(expectedUser2));
     }
 
     @Test

@@ -39,7 +39,7 @@ public class ResteasyProducer extends DefaultProducer {
         LOG.debug("Final URI: " + resourceUri);
 
         // setting headerFilterStrategy from endpoint to httpBinding maybe TODO upgrade
-        endpoint.getRestEasyHttpBinding().setHeaderFilterStrategy(endpoint.getHeaderFilterStrategy());
+        endpoint.getRestEasyHttpBindingRef().setHeaderFilterStrategy(endpoint.getHeaderFilterStrategy());
 
         Map<String, String> parameters = getParameters(exchange, endpoint);
 
@@ -48,12 +48,12 @@ public class ResteasyProducer extends DefaultProducer {
             if(endpoint.getProxyClientClass().isEmpty()){
                 throw new IllegalArgumentException("Uri option proxyClientClass cannot be empty! Full class name must be specified.");
             } else{
-                endpoint.getRestEasyHttpBinding().populateProxyResteasyRequestAndExecute(resourceUri, exchange, parameters);
+                endpoint.getRestEasyHttpBindingRef().populateProxyResteasyRequestAndExecute(resourceUri, exchange, parameters);
             }
         } else{
             // Basic producer
-            Response response = endpoint.getRestEasyHttpBinding().populateResteasyRequestFromExchangeAndExecute(resourceUri, exchange, parameters);
-            endpoint.getRestEasyHttpBinding().populateExchangeFromResteasyResponse(exchange, response);
+            Response response = endpoint.getRestEasyHttpBindingRef().populateResteasyRequestFromExchangeAndExecute(resourceUri, exchange, parameters);
+            endpoint.getRestEasyHttpBindingRef().populateExchangeFromResteasyResponse(exchange, response);
 
             response.close();
         }

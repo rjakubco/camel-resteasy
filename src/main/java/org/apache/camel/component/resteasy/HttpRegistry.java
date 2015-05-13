@@ -62,9 +62,4 @@ public interface HttpRegistry {
      * @return ResteasyCamel servlet with given name
      */
     public ResteasyCamelServlet getCamelServlet(String servletName);
-
-
-    // TODO probably useless
-//    public Set<HttpConsumer> getConsumers();
-
 }

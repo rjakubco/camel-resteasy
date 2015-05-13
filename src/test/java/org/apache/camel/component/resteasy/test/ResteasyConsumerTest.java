@@ -77,20 +77,25 @@ public class ResteasyConsumerTest {
     @Test
     @InSequence(1)
     public void testGetAll() throws Exception {
-        String expectedResponse = "[{\"name\":\"Roman\",\"surname\":\"Jakubco\",\"id\":1},{\"name\":\"Camel\",\"surname\":\"Rider\",\"id\":2}]";
+        String expectedUser1 = "{\"name\":\"Roman\",\"surname\":\"Jakubco\",\"id\":1}";
+        String expectedUser2 = "{\"name\":\"Camel\",\"surname\":\"Rider\",\"id\":2}";
 
         ResteasyClient client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(URI + "getAll");
         Response response = target.request().get();
 
         Assert.assertEquals(200, response.getStatus());
-        Assert.assertEquals(expectedResponse, response.readEntity(String.class));
+
+        String users = response.readEntity(String.class);
+        Assert.assertTrue(users.contains(expectedUser1));
+        Assert.assertTrue(users.contains(expectedUser2));
 
         File file = new File("target/test/consumerTest/all.txt");
         byte[] encoded = Files.readAllBytes(file.toPath());
         String responseBody = new String(encoded);
 
-        Assert.assertEquals(expectedResponse, responseBody);
+        Assert.assertTrue(responseBody.contains(expectedUser1));
+        Assert.assertTrue(responseBody.contains(expectedUser2));
     }
 
     @Test
