@@ -26,7 +26,7 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
     private  String resteasyMethod = "GET";
 
     @UriParam
-    private ResteasyHttpBinding restEasyHttpBinding;
+    private ResteasyHttpBinding restEasyHttpBindingRef;
 
     @UriParam
     private String servletName;
@@ -200,12 +200,12 @@ public class ResteasyEndpoint extends HttpEndpoint implements HeaderFilterStrate
         this.password = password;
     }
 
-    public ResteasyHttpBinding getRestEasyHttpBinding() {
-        return restEasyHttpBinding;
+    public ResteasyHttpBinding getRestEasyHttpBindingRef() {
+        return restEasyHttpBindingRef;
     }
 
-    public void setRestEasyHttpBinding(ResteasyHttpBinding restEasyHttpBinding) {
-        this.restEasyHttpBinding = restEasyHttpBinding;
+    public void setRestEasyHttpBindingRef(ResteasyHttpBinding restEasyHttpBinding) {
+        this.restEasyHttpBindingRef = restEasyHttpBinding;
     }
 
 

@@ -91,18 +91,6 @@ public class DefaultHttpRegistry implements HttpRegistry {
         }
     }
 
-    // TODO probably useless
-//    @SuppressWarnings("rawtypes")
-//    public void register(ResteasyCamelServlet provider, Map properties) {
-//        ResteasyCamelServlet camelServlet = provider;
-//        camelServlet.setServletName((String) properties.get("servlet-name"));
-//        register(camelServlet);
-//    }
-    // TODO probably useless
-//    public void unregister(ResteasyCamelServlet provider, Map<String, Object> properties) {
-//        unregister(provider);
-//    }
-    
     @Override
     public void register(ResteasyCamelServlet provider) {
         if (LOG.isDebugEnabled()) {
@@ -131,18 +119,4 @@ public class DefaultHttpRegistry implements HttpRegistry {
         }
         return null;
     }
-
-    // TODO probably useless
-//    public void setServlets(List<Servlet> servlets) {
-//        providers.clear();
-//        for (Servlet servlet : servlets) {
-//            if (servlet instanceof CamelServlet) {
-//                providers.add((ResteasyCamelServlet) servlet);
-//            }
-//        }
-//    }
-    // TODO probably useless
-//    public Set<HttpConsumer> getConsumers() {
-//        return consumers;
-//    }
 }

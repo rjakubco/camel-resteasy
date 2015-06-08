@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://camel.apache.org/schema/spring
+                           http://camel.apache.org/schema/spring/camel-spring.xsd"
+        >
+
+
+    <camelContext id="first" xmlns="http://camel.apache.org/schema/spring">
+        <restConfiguration component="resteasy" > <endpointProperty key="servletName" value="resteasy-camel-servlet"/>
+            <endpointProperty key="camelProxy" value="true"/>
+        </restConfiguration>
+
+        <rest path="/say">
+            <get uri="/hello">
+                <to uri="direct:hello"/>
+            </get>
+        </rest>
+
+        <route>
+            <from uri="direct:hello"/>
+            <transform>
+                <constant>Only message from Camel</constant>
+            </transform>
+            <setHeader headerName="CamelHttpResponseCode">
+                <constant>200</constant>
+            </setHeader>
+        </route>
+    </camelContext>
+
+
+
+    <bean id="resteasy" class="org.apache.camel.component.resteasy.ResteasyComponent">
+    </bean>
+
+
+</beans>
