@@ -1,8 +1,5 @@
 camel-resteasy
 ==============
-Resteasy camel component
-* Component is still in development so at the moment it is not included in master branch of Camel. 
-
 ### Producer:
 Producer is using RESTEasy implementation of JAX-RS 2.0 Client API for calling server. The producer will use all possibilities of RESTEasy client along with Resteasy Proxy Framework ([see more](http://docs.jboss.org/resteasy/docs/3.0-beta-3/userguide/html/RESTEasy_Client_Framework.html))
 
@@ -42,7 +39,7 @@ Consumer is representing the server side of the RESTEasy and it is integrated wi
 RESTEasy is only registering annotations in classes or on interfaces if they have implementing class. If you want just specified paths and methods by annotation in interface and handle creating response in camel, you can use this component with proxy option. You just need to specify proxy interfaces in component bean in property "proxyConsumersClasses", separated by comma.
 Then set URI option "proxy" on consumer to true The component will create dynamic proxy classes implementing these interfaces and register them with the servlet. This is done on initialization of the servlet.
 
-There is also posibility to just create consumers in camel route without interface or classes. For this purporse just set URI option camelProxy to true and you can create responses in camel. You can also sey URI option httpMethodRestrict to restrict which http method will be allowed.
+There is also posibility to just create consumers in camel route without interface or classes. For this purporse, just set URI option camelProxy to true and you can create responses in camel. You can also sey URI option httpMethodRestrict to restrict which http method will be allowed.
 ``` 
 <bean id="resteasy" class="org.apache.camel.component.resteasy.ResteasyComponent">
         <property name="proxyConsumersClasses" value="com.camel.rest.ServiceInterface,com.camel.rest.AnotherServiceInterface"/>
