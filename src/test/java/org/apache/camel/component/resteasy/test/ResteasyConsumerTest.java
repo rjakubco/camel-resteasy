@@ -113,21 +113,6 @@ public class ResteasyConsumerTest {
 
     @Test
     public void testPost() throws Exception {
-//        WebArchive test = ShrinkWrap.create(WebArchive.class, "test.war")
-//                .addAsResource(new File("src/test/resources/contexts/basicConsumer.xml"), "applicationContext.xml")
-//                .addAsWebInfResource(new File("src/test/resources/web.xml"))
-//                .addClasses(Customer.class, CustomerService.class, CustomerList.class)
-//                .addPackage("org.apache.camel.component.resteasy")
-//                .addPackage("org.apache.camel.component.resteasy.servlet")
-//                .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()
-//                        .withTransitivity().asFile())
-//                .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
-//        test.as(ZipExporter.class).exportTo(
-//                new File("test.war"), true);
-
-
-//        Thread.sleep(180000);
-
 
         String expectedResponse = "Customer added : Customer{name='TestCreate', surname='TestCreate', id=3}";
         int customerId = 3;

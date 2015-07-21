@@ -1,8 +1,10 @@
 package org.apache.camel.component.resteasy;
 
+
 import org.apache.camel.Processor;
 import org.apache.camel.component.http.HttpConsumer;
 import org.apache.camel.component.http.HttpEndpoint;
+
 
 /**
  * A Consumer of exchanges for a service in Resteasy.  ResteasyConsumer acts a Resteasy

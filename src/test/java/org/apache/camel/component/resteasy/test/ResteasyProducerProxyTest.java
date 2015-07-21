@@ -50,6 +50,7 @@ public class ResteasyProducerProxyTest extends CamelTestSupport {
                 .addAsLibraries(Maven.resolver().resolve("org.apache.commons:commons-lang3:3.3.2").withTransitivity().asFile());
     }
 
+    @Override
     protected RouteBuilder createRouteBuilder() {
         return new RouteBuilder() {
             public void configure() {

@@ -35,8 +35,8 @@ public class ResteasySimpleConsumerTest {
                 .addPackage("org.apache.camel.component.resteasy")
                 .addPackage("org.apache.camel.component.resteasy.servlet")
                 .addAsLibraries(Maven.resolver().loadPomFromFile("src/test/resources/pom.xml").importRuntimeAndTestDependencies().resolve()
-                        .withTransitivity().asFile())
-                .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.14.0").withTransitivity().asFile());
+                        .withTransitivity().asFile());
+//                .addAsLibraries(Maven.resolver().resolve("org.apache.camel:camel-http:2.16-SNAPSHOT").withTransitivity().asFile());
     }
 
     @Test
